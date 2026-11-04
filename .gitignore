@@ -1,0 +1,104 @@
+# ==========================================
+# MONOREPO: Django (Backend) + React (Frontend)
+# ==========================================
+
+# ------------------------------------------
+# 1. Variables de entorno y secretos
+# ------------------------------------------
+*.env
+*.env.*
+!.env.example
+!.env.template
+
+# ------------------------------------------
+# 2. Python / Django (Backend)
+# ------------------------------------------
+# Entornos virtuales
+backend/venv/
+backend/env/
+backend/ENV/
+backend/env.bak/
+backend/venv.bak/
+
+# Byte-compiled / archivos de caché de Python
+backend/__pycache__/
+backend/*.py[cod]
+backend/*$py.class
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+
+# Base de datos local y archivos subidos por usuarios
+backend/db.sqlite3
+backend/db.sqlite3-journal
+backend/media/
+
+# Archivos estáticos recolectados (collectstatic)
+backend/staticfiles/
+
+# Logs
+backend/*.log
+
+# ------------------------------------------
+# 3. Node.js / React (Frontend)
+# ------------------------------------------
+# Dependencias de Node
+frontend/node_modules/
+frontend/jspm_packages/
+
+# Builds de producción (Vite, CRA, Next.js)
+frontend/dist/
+frontend/build/
+frontend/out/
+
+# Caché de empacadores y linters
+frontend/.build/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/.eslintcache/
+frontend/.stylelintcache/
+
+# Logs de gestores de paquetes (npm, yarn, pnpm)
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+
+# ------------------------------------------
+# 4. Editores de código y IDEs
+# ------------------------------------------
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# PyCharm / WebStorm / IntelliJ
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Linux / Vim
+*~
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+
+# ------------------------------------------
+# 5. Docker y Herramientas CI/CD (Opcional)
+# ------------------------------------------
+.docker/
