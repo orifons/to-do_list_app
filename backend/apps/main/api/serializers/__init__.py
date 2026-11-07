@@ -1,0 +1,1 @@
+from .timestamped_serializer import TimeStampedModelSerializer
