@@ -34,7 +34,8 @@ backend/db.sqlite3
 backend/db.sqlite3-journal
 backend/media/
 
-# Archivos estáticos recolectados (collectstatic)
+# Archivos media y estáticos recolectados (collectstatic)
+backend/root/
 backend/staticfiles/
 
 # Logs
