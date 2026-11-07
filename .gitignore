@@ -27,6 +27,7 @@ backend/*$py.class
 backend/.pytest_cache/
 backend/.coverage
 backend/htmlcov/
+backend/**/*.pyc
 
 # Base de datos local y archivos subidos por usuarios
 backend/db.sqlite3
