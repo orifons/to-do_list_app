@@ -1,5 +1,5 @@
 from functools import partial
-from django.db import models
+from django.db import models, router, transaction
 
 from apps.main.models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
@@ -19,3 +19,29 @@ class UserProfile(TimeStampedModel):
 
     def __str__(self):
         return self.user.username
+
+    def save(self, *args, **kwargs):
+        using = kwargs.get("using") or router.db_for_write(type(self), instance=self)
+        update_fields = kwargs.get("update_fields")
+
+        if update_fields is not None and "image" not in update_fields:
+            return super().save(*args, **kwargs)
+
+        with transaction.atomic(using=using):
+            old_image_name = None
+            if self.pk:
+                old_image_name = (
+                    UserProfile.objects.using(using)
+                    .filter(pk=self.pk)
+                    .values_list("image", flat=True)
+                    .first()
+                )
+
+            super().save(*args, **kwargs)
+
+            new_image_name = self.image.name
+            if old_image_name and old_image_name != new_image_name:
+                transaction.on_commit(
+                    partial(self.image.storage.delete, old_image_name),
+                    using=using,
+                )
