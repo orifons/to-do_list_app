@@ -14,8 +14,7 @@ class UserProfileAdmin(admin.ModelAdmin):
     def get_image(self, obj):
         if obj.image:
             return format_html(
-                '<img src="{}" style="max-height:50px; max-width:50px; border-radius:50%;" />',
-                obj.image.url,
+                '<a href="{}" target="_blank" nofollow>{}<a/>', obj.image.url, obj.image
             )
         return None
 
