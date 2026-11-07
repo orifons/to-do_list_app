@@ -6,7 +6,7 @@ from to_do_settings.functions import file_directory_path
 
 
 class UserProfile(models.Model):
-    user = models.OneToOneField("auth.User", on_delete=models.CASCADE)
+    user = models.OneToOneField("auth.User", verbose_name=_("user"), on_delete=models.CASCADE)
     image = models.ImageField(
         verbose_name=_("image"),
         upload_to=partial(file_directory_path, data=["user"]),
