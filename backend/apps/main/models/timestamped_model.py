@@ -10,8 +10,8 @@ class TimeStampedModel(models.Model):
     ``created`` and ``modified`` fields.
     """
 
-    create_date = models.DateTimeField(verbose_name=_("create date"), auto_now_add=True)
-    update_date = models.DateTimeField(verbose_name=_("update date"), auto_now=True)
+    created_at = models.DateTimeField(verbose_name=_("create date"), auto_now_add=True)
+    updated_at = models.DateTimeField(verbose_name=_("update date"), auto_now=True)
 
     class Meta:
         abstract = True
