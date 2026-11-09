@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "rest_framework",
     # Local apps
     "apps.user_profile",
+    "apps.task",
 ]
 
 MIDDLEWARE = [
