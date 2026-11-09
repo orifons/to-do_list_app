@@ -17,7 +17,7 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
-@receiver(pre_save)
-def my_handler(sender, instance, **kwargs):
-    if issubclass(sender, TimeStampedModel):
-        print("El objeto se ha actualizado: ", instance)
+# @receiver(pre_save)
+# def my_handler(sender, instance, **kwargs):
+#     if issubclass(sender, TimeStampedModel):
+#         print(f"El {sender._meta.model_name} se ha actualizado")
