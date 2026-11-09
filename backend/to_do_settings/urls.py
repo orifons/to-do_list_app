@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include("apps.user_profile.api.urls")),
+    path("api/v1/", include("to_do_settings.urls_api")),
 ]
 
 if settings.DEBUG:
