@@ -31,7 +31,7 @@ class TaskItemViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], url_path="alerts")
     def expiring_alerts(self):
         """
-        Custom endpoint: /api/tasks/alerts/
+        Custom endpoint: /api/v1/tasks/alerts/
         Returns pending tasks that expire between the current moment and the next 3 days.
         """
         now = timezone.now()
