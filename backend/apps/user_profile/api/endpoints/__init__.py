@@ -1,1 +1,1 @@
-from .user_profile import UserProfileViewSets
+from .user_profile import UserProfileViewSet
