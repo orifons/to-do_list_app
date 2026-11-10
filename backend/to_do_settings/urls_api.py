@@ -7,7 +7,3 @@ from apps.user_profile.api.endpoints import UserProfileViewSet
 router = DefaultRouter()
 router.register(r"tasks", TaskItemViewSet, basename="taskitem")
 router.register(r"profile", UserProfileViewSet, basename="userprofile")
-
-urlpatterns = [
-    path("", include(router.urls)),
-]
