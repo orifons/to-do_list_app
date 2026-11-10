@@ -5,7 +5,7 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.test import TransactionTestCase, override_settings
 
-from apps.user_profile.models import UserProfile
+from apps.profile.models import UserProfile
 
 
 class UserProfileImageLifecycleTests(TransactionTestCase):

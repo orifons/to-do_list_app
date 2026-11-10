@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from apps.main.admin import TimestampedModelAdmin
 
-from apps.user_profile.models import UserProfile
+from apps.profile.models import UserProfile
 
 
 @admin.register(UserProfile)

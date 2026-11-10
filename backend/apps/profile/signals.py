@@ -4,7 +4,7 @@ from django.db import transaction
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 
-from apps.user_profile.models import UserProfile
+from apps.profile.models import UserProfile
 
 
 @receiver(post_delete, sender=UserProfile)

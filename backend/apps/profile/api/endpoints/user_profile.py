@@ -1,8 +1,8 @@
 from rest_framework import viewsets, permissions
 from to_do_settings.permissions import IsOwnerOrReadOnly
 
-from apps.user_profile.models import UserProfile
-from apps.user_profile.api.serializers import UserProfileSerializer
+from apps.profile.models import UserProfile
+from apps.profile.api.serializers import UserProfileSerializer
 
 
 class UserProfileViewSet(viewsets.ModelViewSet):
