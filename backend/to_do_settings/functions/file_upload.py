@@ -34,7 +34,7 @@ def file_directory_path(instance, filename, **kwargs):
     o rutas Windows con «:» rompen os.path.join en Windows.
     """
     data = kwargs.get("data", [])
-    model_name = instance._meta.verbose_name.lower()
+    model_name = instance._meta.verbose_name.lower().replace(" ", "_")
     now = datetime.now()
     safe_filename = set_filename_format(now, filename)
 
