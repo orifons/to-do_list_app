@@ -6,7 +6,7 @@ from apps.main.models.timestamped_abstract import TimeStampedModel
 from to_do_settings.functions import file_directory_path
 
 
-class UserProfile(TimeStampedModel):
+class Profile(TimeStampedModel):
     user = models.OneToOneField(
         "auth.User", verbose_name=_("user"), on_delete=models.CASCADE
     )
@@ -31,7 +31,7 @@ class UserProfile(TimeStampedModel):
             old_image_name = None
             if self.pk:
                 old_image_name = (
-                    UserProfile.objects.using(using)
+                    Profile.objects.using(using)
                     .filter(pk=self.pk)
                     .values_list("image", flat=True)
                     .first()
