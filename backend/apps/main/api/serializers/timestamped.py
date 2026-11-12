@@ -1,4 +1,3 @@
-from django.conf import settings
 from rest_framework import serializers
 
 
@@ -10,4 +9,5 @@ class TimeStampedModelSerializer(serializers.ModelSerializer):
             "updated_at": serializers.DateTimeField(),
         }
         new_fields.update(fields)
+
         return new_fields
