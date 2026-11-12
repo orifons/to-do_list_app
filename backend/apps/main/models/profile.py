@@ -1,8 +1,8 @@
 from functools import partial
 from django.db import models, router, transaction
-
-from apps.main.models import TimeStampedModel
 from django.utils.translation import gettext_lazy as _
+
+from apps.main.models.timestamped_abstract import TimeStampedModel
 from to_do_settings.functions import file_directory_path
 
 
