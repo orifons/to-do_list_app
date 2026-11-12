@@ -1,1 +1,1 @@
-from .timestamped_admin import TimestampedModelAdmin
+from .timestamped_abstract import TimestampedModelAdmin
