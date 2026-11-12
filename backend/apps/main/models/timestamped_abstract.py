@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
@@ -17,7 +16,7 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 
-# @receiver(pre_save)
-# def my_handler(sender, instance, **kwargs):
-#     if issubclass(sender, TimeStampedModel):
-#         print(f"El {sender._meta.model_name} se ha actualizado")
+@receiver(models.signals.pre_save)
+def my_handler(sender, instance, **kwargs):
+    if issubclass(sender, TimeStampedModel):
+        print(f"El {sender._meta.model_name} se ha actualizado")
