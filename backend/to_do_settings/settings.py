@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     # Local apps
+    "apps.main",
     "apps.task",
 ]
 
