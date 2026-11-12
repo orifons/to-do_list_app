@@ -1,8 +1,7 @@
 from django.contrib import admin
 
 from apps.main.admin import TimestampedModelAdmin
-
-from backend.apps.task.models import TaskItem
+from apps.task.models import TaskItem
 
 
 @admin.register(TaskItem)
