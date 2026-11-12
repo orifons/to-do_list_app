@@ -4,9 +4,9 @@ from django.utils import timezone
 from rest_framework import permissions, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from to_do_settings.permissions import IsOwnerOrReadOnly
 
 from apps.task.models import TaskItem
+from to_do_settings.permissions import IsOwnerOrReadOnly
 from apps.task.api.serializers import TaskItemSerializer
 
 
@@ -29,7 +29,7 @@ class TaskItemViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     @action(detail=False, methods=["get"], url_path="alerts")
-    def expiring_alerts(self):
+    def expiring_alerts(self, request):
         """
         Custom endpoint: /api/v1/tasks/alerts/
         Returns pending tasks that expire between the current moment and the next 3 days.
