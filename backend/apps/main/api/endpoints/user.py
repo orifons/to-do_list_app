@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
 
 from apps.main.api.serializers import UserSerializer
-from to_do_settings.permissions import IsOwnerOrReadOnly
+from to_do_settings.permissions import IsOwner
 
 User = get_user_model()
 
@@ -12,7 +12,7 @@ User = get_user_model()
 class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOwner]
     http_method_names = ["get"]
 
     def get_queryset(self):
