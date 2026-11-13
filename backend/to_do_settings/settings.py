@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     # Third-party apps
     "corsheaders",
     "rest_framework",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     # Local apps
     "apps.main",
     "apps.task",
