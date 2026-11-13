@@ -1,1 +1,1 @@
-from .is_owner import IsOwnerOrReadOnly
+from .is_owner import IsOwner

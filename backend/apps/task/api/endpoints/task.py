@@ -6,14 +6,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from apps.task.models import TaskItem
-from to_do_settings.permissions import IsOwnerOrReadOnly
+from to_do_settings.permissions import IsOwner
 from apps.task.api.serializers import TaskItemSerializer
 
 
 class TaskItemViewSet(viewsets.ModelViewSet):
     queryset = TaskItem.objects.all()
     serializer_class = TaskItemSerializer
-    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated, IsOwner]
 
     def get_queryset(self):
         """
