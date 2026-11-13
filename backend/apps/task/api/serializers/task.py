@@ -1,9 +1,10 @@
 from rest_framework import serializers
 
 from apps.task.models import TaskItem
+from apps.main.api.serializers import TimeStampedModelSerializer
 
 
-class TaskItemSerializer(serializers.ModelSerializer):
+class TaskItemSerializer(TimeStampedModelSerializer):
     class Meta:
         model = TaskItem
         fields = [
@@ -15,8 +16,6 @@ class TaskItemSerializer(serializers.ModelSerializer):
             "completed",
             "location",
             "meeting_link",
-            "created_at",
-            "updated_at",
         ]
         read_only_fields = ["id", "created_at", "updated_at"]
 
