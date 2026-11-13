@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from main.api.serializers import CustomTokenObtainPairSerializer, UserSerializer
+from apps.main.api.serializers import CustomTokenObtainPairSerializer, UserSerializer
 
 
 class SignInView(TokenObtainPairView):

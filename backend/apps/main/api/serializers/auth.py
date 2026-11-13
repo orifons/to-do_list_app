@@ -3,7 +3,7 @@ from typing import Any
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from main.api.serializers.user import UserSerializer
+from apps.main.api.serializers.user import UserSerializer
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
