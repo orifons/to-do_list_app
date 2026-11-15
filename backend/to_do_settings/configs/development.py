@@ -3,7 +3,7 @@
 # Aquí puedes agregar configuraciones específicas para el entorno de desarrollo,       #
 # como la configuración de la base de datos local, los middleware de depuración, etc.  #
 ########################################################################################
-from .settings import *
+from ..settings import *
 
 # Permite que Django reconozca el HTTPS que termina en Caddy.
 SECURE_PROXY_SSL_HEADER = tuple(
