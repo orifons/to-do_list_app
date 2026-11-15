@@ -6,13 +6,12 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
-from apps.main.api.endpoints import UserViewSet, SignInView
+from apps.main.api.endpoints import WhoIAmViewSet, SignInView
 from apps.task.api.endpoints import TaskItemViewSet
 
 router = DefaultRouter()
-router.register(r"accounts/me", UserViewSet, basename="user-me")
+router.register(r"accounts/me", WhoIAmViewSet, basename="user-me")
 router.register(r"tasks", TaskItemViewSet, basename="taskitem")
-
 
 urlpatterns = [
     path("", include(router.urls)),
