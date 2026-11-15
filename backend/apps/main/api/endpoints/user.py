@@ -9,7 +9,7 @@ from to_do_settings.permissions import IsOwner
 User = get_user_model()
 
 
-class UserViewSet(ModelViewSet):
+class WhoIAmViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsOwner]

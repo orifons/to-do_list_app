@@ -1,2 +1,2 @@
 from .auth import SignInView
-from .user import UserViewSet
+from .user import WhoIAmViewSet
