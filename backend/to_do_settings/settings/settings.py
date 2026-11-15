@@ -124,11 +124,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.1/howto/static-files/
 
+BACKEND_DIR = os.path.dirname(BASE_DIR)
+print(BASE_DIR)
+print(BACKEND_DIR)
+
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "root", "static")
+STATIC_ROOT = os.path.join(BACKEND_DIR, "root", "static")
 
 MEDIA_URL = "media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "root", "media")
+MEDIA_ROOT = os.path.join(BACKEND_DIR, "root", "media")
 
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
