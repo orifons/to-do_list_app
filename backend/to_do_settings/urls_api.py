@@ -1,5 +1,6 @@
-from rest_framework.routers import DefaultRouter
 from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import token_refresh, token_verify
 from drf_spectacular.views import (
     SpectacularAPIView,
     SpectacularSwaggerView,
@@ -26,6 +27,8 @@ router.register(r"tasks", TaskItemViewSet, basename="taskitem")
 urlpatterns = [
     path("", include(router.urls)),
     path("accounts/token/", SignInView.as_view(), name="user-signin"),
+    path("accounts/token/refresh/", token_refresh, name="token_refresh"),
+    path("accounts/token/verify/", token_verify, name="token_verify"),
     # URLs for documentation (Swagger and ReDoc)
     path(
         "schema/", SpectacularAPIView.as_view(), name="schema"
