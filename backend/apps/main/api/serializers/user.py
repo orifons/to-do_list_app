@@ -60,3 +60,31 @@ class UserCreateSerializer(serializers.ModelSerializer):
         create.save()
 
         return create
+
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(required=False, allow_null=True)
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "email",
+            "first_name",
+            "last_name",
+            "image",
+        ]
+
+    def update(self, instance, validated_data):
+        profile = Profile.objects.get_or_create(user=instance)[0]
+        image = validated_data.pop("image", None)
+
+        if image is not None:
+            profile.image = image
+            profile.save()
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        return instance
