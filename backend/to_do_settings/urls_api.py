@@ -6,10 +6,11 @@ from drf_spectacular.views import (
     SpectacularRedocView,
 )
 
-from apps.main.api.endpoints import WhoIAmViewSet, SignInView
+from apps.main.api.endpoints import SignInView, WhoIAmViewSet, UserCreateViewSet
 from apps.task.api.endpoints import TaskItemViewSet
 
 router = DefaultRouter()
+router.register(r"user/create", UserCreateViewSet, basename="user-create")
 router.register(r"accounts/me", WhoIAmViewSet, basename="user-me")
 router.register(r"tasks", TaskItemViewSet, basename="taskitem")
 
