@@ -1,12 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-@import "@fontsource-variable/noto-sans";
-@import "@fontsource-variable/playfair-display";
+@import "./typeset.css";
+/* @import "@fontsource-variable/noto-sans"; */
+/* @import "@fontsource-variable/playfair-display"; */
+@import "@fontsource-variable/raleway";
+@import "@fontsource-variable/jetbrains-mono";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-raleway: 'Raleway Variable', sans-serif;
+  --font-jetbrains-mono: 'JetBrains Mono Variable', monospace;
   --background: oklch(1 0 0);
   --foreground: oklch(0.147 0.004 49.3);
   --card: oklch(1 0 0);
@@ -116,6 +121,15 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+.typeset-docs {
+  --typeset-font-body: var(--font-raleway);
+  --typeset-font-heading: var(--font-raleway);
+  --typeset-font-mono: var(--font-jetbrains-mono);
+  --typeset-size: 15px;
+  --typeset-leading: 1.75;
+  --typeset-flow: 1.25em;
 }
 
 @layer base {
