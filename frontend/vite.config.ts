@@ -29,10 +29,10 @@ export default defineConfig({
       "web.to-do-list.dev",
     ],
 
-    hmr: {
-      protocol: "ws",
-      host: "web.to-do-list.dev",
-      clientPort: 443,
-    }
+    // hmr: {
+    //   protocol: "ws",
+    //   host: "web.to-do-list.dev",
+    //   clientPort: 443,
+    // }
   }
 })
