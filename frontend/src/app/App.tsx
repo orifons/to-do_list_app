@@ -9,9 +9,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="typeset typeset-docs max-w-[42em]">
-        <RouterApp />
-      </div>
+      <RouterApp />
     </QueryClientProvider>
   )
 }

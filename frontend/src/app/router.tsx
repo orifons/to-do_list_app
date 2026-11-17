@@ -1,6 +1,10 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 
-const router = createBrowserRouter([]);
+import LoginPage from "@/features/auth/sign-in/SignIn";
+
+const router = createBrowserRouter([
+  { Component: LoginPage, path: "/sign-in" },
+]);
 
 export default function RouterApp() {
   return (
