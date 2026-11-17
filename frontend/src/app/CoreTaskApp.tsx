@@ -5,7 +5,7 @@ import RouterApp from '@/app/router';
 
 const queryClient = new QueryClient();
 
-function App() {
+function CoreTaskApp() {
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -14,4 +14,4 @@ function App() {
   )
 }
 
-export default App
+export default CoreTaskApp
