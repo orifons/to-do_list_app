@@ -1,4 +1,6 @@
 import { cn } from "cn"
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -11,16 +13,33 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { LogIn } from "lucide-react";
+import { loginSchema, type LoginFormData } from "../schema/sign-in";
+import { Spinner } from "@/components/ui/spinner";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  // Inicializamos el hook con el resolver de Zod
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  // Función que se ejecuta si la validación pasa
+  const onSubmit = async (data: LoginFormData) => {
+    console.log('Datos listos para enviar:', data);
+    // Aquí harías tu petición fetch o axios hacia tu backend en Node.js
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -30,29 +49,27 @@ export function LoginForm({
               </div>
               <Field>
                 <FieldLabel htmlFor="username">Username</FieldLabel>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="pepe"
-                  required
-                />
+                <Input id="username" type="text" placeholder="ej. usuario_123" {...register('username')} required />
+                {errors.username && (
+                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.username.message}</p>
+                )}
               </Field>
               <Field>
                 <div className="flex items-center">
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <a
-                    href="#"
-                    className="ml-auto text-sm underline-offset-2 hover:underline"
-                  >
+                  <a href="#" className="ml-auto text-sm underline-offset-2 hover:underline" >
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required placeholder="****************" />
+                <Input id="password" type="password" placeholder="****************" {...register('password')} required />
+                {errors.password && (
+                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.password.message}</p>
+                )}
               </Field>
               <Field>
-                <Button type="submit">
+                <Button type="submit" disabled={isSubmitting}>
                   <LogIn className="mr-2 h-4 w-4" />
-                  Login
+                  {isSubmitting ? "Logining" + <Spinner /> : "Login"}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
