@@ -5,12 +5,12 @@ import z from 'zod'
 export const loginSchema = z.object({
   username: z
     .string()
-    .min(3, 'El nombre de usuario debe tener al menos 3 caracteres')
-    .max(20, 'El nombre de usuario no puede superar los 20 caracteres')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Solo se permiten letras, números y guiones bajos'),
+    .min(3, 'Username must be at least 3 characters long')
+    .max(20, 'Username cannot exceed 20 characters')
+    .regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers and underscores are allowed'),
   password: z
     .string()
-    .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    .min(8, 'Password must be at least 8 characters long'),
 })
 
 // Inferimos el tipo de datos a partir del esquema (útil para TypeScript)
