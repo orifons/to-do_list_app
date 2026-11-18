@@ -1,13 +1,420 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowUpRight,
+  CalendarDays,
+  Check,
+  Circle,
+  Clock3,
+  LayoutGrid,
+  List,
+  MapPin,
+  Plus,
+  Search,
+  Video,
+} from "lucide-react";
 
+import { ModeToggle } from "@/components/shared/mode-toggle";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import axiosInstance from "@/configs/axios";
 
-function TaskListPage() {
-  return (
-    <div>
-      <h1>Task List</h1>
-      <Link to="/tasks/new">Add New Task</Link>
-    </div>
-  )
+type Task = {
+  id: number;
+  title: string;
+  description: string | null;
+  task_type: "task" | "appointment" | "conference";
+  due_date: string;
+  completed: boolean;
+  location: string | null;
+  meeting_link: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type TaskResponse = Task[] | { results: Task[] };
+type TaskFilter = "all" | "pending" | "completed";
+type ViewMode = "list" | "cards";
+
+const EMPTY_TASKS: Task[] = [];
+
+const taskTypeLabels: Record<Task["task_type"], string> = {
+  task: "Tarea",
+  appointment: "Presencial",
+  conference: "Videollamada",
+};
+
+const dateFormatter = new Intl.DateTimeFormat("es", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+const timeFormatter = new Intl.DateTimeFormat("es", {
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
+function getTasks(response: TaskResponse) {
+  return Array.isArray(response) ? response : response.results;
 }
 
-export default TaskListPage
+function formatDueDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
+  return `${dateFormatter.format(date)} · ${timeFormatter.format(date)}`;
+}
+
+function TaskTypeIcon({ type }: { type: Task["task_type"] }) {
+  if (type === "appointment") return <MapPin aria-hidden="true" />;
+  if (type === "conference") return <Video aria-hidden="true" />;
+  return <Check aria-hidden="true" />;
+}
+
+function TaskMetadata({ task }: { task: Task }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+      <span className="inline-flex items-center gap-1.5">
+        <Clock3 className="size-3.5" aria-hidden="true" />
+        {formatDueDate(task.due_date)}
+      </span>
+      {task.location && (
+        <span className="inline-flex items-center gap-1.5">
+          <MapPin className="size-3.5" aria-hidden="true" />
+          {task.location}
+        </span>
+      )}
+      {task.meeting_link && (
+        <a
+          href={task.meeting_link}
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-primary hover:underline"
+        >
+          <Video className="size-3.5" aria-hidden="true" />
+          Unirse a la reunión
+          <ArrowUpRight className="size-3" aria-hidden="true" />
+        </a>
+      )}
+    </div>
+  );
+}
+
+function TaskStatus({ completed }: { completed: boolean }) {
+  return (
+    <span
+      className={
+        completed
+          ? "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400"
+          : "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400"
+      }
+    >
+      {completed ? (
+        <Check className="size-3" aria-hidden="true" />
+      ) : (
+        <Circle className="size-2.5" aria-hidden="true" />
+      )}
+      {completed ? "Completada" : "Pendiente"}
+    </span>
+  );
+}
+
+function TaskListItem({ task }: { task: Task }) {
+  return (
+    <article className="group flex flex-col gap-3 border-b border-border/70 px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5">
+      <div className="flex min-w-0 flex-1 items-start gap-3.5">
+        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
+          <TaskTypeIcon type={task.task_type} />
+        </span>
+        <div className="min-w-0 flex-1">
+          <div className="mb-1.5 flex flex-wrap items-center gap-2">
+            <h2 className={task.completed ? "font-medium text-muted-foreground line-through" : "font-semibold"}>
+              {task.title}
+            </h2>
+            <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+              {taskTypeLabels[task.task_type]}
+            </span>
+          </div>
+          {task.description && (
+            <p className="mb-2 line-clamp-1 text-sm text-muted-foreground">
+              {task.description}
+            </p>
+          )}
+          <TaskMetadata task={task} />
+        </div>
+      </div>
+      <TaskStatus completed={task.completed} />
+    </article>
+  );
+}
+
+function TaskCard({ task }: { task: Task }) {
+  return (
+    <Card className="h-full rounded-2xl border-0 shadow-sm ring-1 ring-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+      <CardContent className="flex h-full flex-col p-5">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/5 text-primary">
+            <TaskTypeIcon type={task.task_type} />
+          </span>
+          <TaskStatus completed={task.completed} />
+        </div>
+        <div className="mb-5">
+          <span className="mb-2 inline-block text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
+            {taskTypeLabels[task.task_type]}
+          </span>
+          <h2 className={task.completed ? "mb-2 font-semibold text-muted-foreground line-through" : "mb-2 font-semibold"}>
+            {task.title}
+          </h2>
+          <p className="line-clamp-3 min-h-5 text-sm leading-relaxed text-muted-foreground">
+            {task.description || "Sin descripción"}
+          </p>
+        </div>
+        <div className="mt-auto border-t border-border/70 pt-4">
+          <TaskMetadata task={task} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function TaskListPage() {
+  const [view, setView] = useState<ViewMode>("list");
+  const [filter, setFilter] = useState<TaskFilter>("all");
+  const [search, setSearch] = useState("");
+
+  const tasksQuery = useQuery({
+    queryKey: ["tasks"],
+    queryFn: async () => {
+      const { data } = await axiosInstance.get<TaskResponse>("/tasks/");
+      return getTasks(data);
+    },
+  });
+
+  const tasks = tasksQuery.data ?? EMPTY_TASKS;
+  const filteredTasks = useMemo(() => {
+    const normalizedSearch = search.trim().toLocaleLowerCase("es");
+    return tasks.filter((task) => {
+      const matchesFilter =
+        filter === "all" ||
+        (filter === "completed" ? task.completed : !task.completed);
+      const matchesSearch =
+        !normalizedSearch ||
+        `${task.title} ${task.description ?? ""}`
+          .toLocaleLowerCase("es")
+          .includes(normalizedSearch);
+      return matchesFilter && matchesSearch;
+    });
+  }, [filter, search, tasks]);
+
+  const pendingCount = tasks.filter((task) => !task.completed).length;
+  const completedCount = tasks.length - pendingCount;
+  const filters: { id: TaskFilter; label: string; count: number }[] = [
+    { id: "all", label: "Todas", count: tasks.length },
+    { id: "pending", label: "Pendientes", count: pendingCount },
+    { id: "completed", label: "Completadas", count: completedCount },
+  ];
+
+  return (
+    <main className="min-h-svh bg-muted/30">
+      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+        <header className="mb-10 flex items-center justify-between border-b border-border/70 pb-5">
+          <Link to="/tasks" className="flex items-center gap-3" aria-label="CoreTask, tareas">
+            <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+              <Check className="size-5" aria-hidden="true" />
+            </span>
+            <span className="font-semibold tracking-tight">coretask</span>
+          </Link>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm text-muted-foreground sm:inline">Tu espacio de trabajo</span>
+            <ModeToggle />
+          </div>
+        </header>
+
+        <section aria-labelledby="tasks-heading">
+          <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+            <div>
+              <p className="mb-2 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
+                Organiza tu día
+              </p>
+              <h1 id="tasks-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl">
+                Mis tareas<span className="text-primary">.</span>
+              </h1>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Todo lo que tienes por hacer, en un solo lugar.
+              </p>
+            </div>
+            <Button
+              render={<Link to="/tasks/new" />}
+              className="w-full rounded-xl normal-case tracking-normal sm:w-auto"
+            >
+              <Plus aria-hidden="true" />
+              Nueva tarea
+            </Button>
+          </div>
+
+          <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <Card className="rounded-2xl border-0 shadow-sm ring-1 ring-border/70">
+              <CardContent className="flex items-center gap-3.5 p-4">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-primary/5 text-primary">
+                  <CalendarDays className="size-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-xs text-muted-foreground">Total de tareas</p>
+                  <p className="text-xl font-semibold">{tasks.length}</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl border-0 shadow-sm ring-1 ring-border/70">
+              <CardContent className="flex items-center gap-3.5 p-4">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-400">
+                  <Clock3 className="size-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-xs text-muted-foreground">Por completar</p>
+                  <p className="text-xl font-semibold">{pendingCount}</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="rounded-2xl border-0 shadow-sm ring-1 ring-border/70">
+              <CardContent className="flex items-center gap-3.5 p-4">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                  <Check className="size-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <p className="text-xs text-muted-foreground">Completadas</p>
+                  <p className="text-xl font-semibold">{completedCount}</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="flex gap-1 overflow-x-auto" aria-label="Filtrar tareas">
+              {filters.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={filter === item.id}
+                  onClick={() => setFilter(item.id)}
+                  className={
+                    filter === item.id
+                      ? "inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground"
+                      : "inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  }
+                >
+                  {item.label}
+                  <span className={filter === item.id ? "rounded-full bg-primary-foreground/15 px-1.5 py-0.5 text-[10px]" : "rounded-full bg-muted px-1.5 py-0.5 text-[10px]"}>
+                    {item.count}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/80 bg-background px-3 text-muted-foreground focus-within:ring-2 focus-within:ring-ring/30 sm:w-56 sm:flex-none">
+                <Search className="size-4 shrink-0" aria-hidden="true" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Buscar tareas..."
+                  aria-label="Buscar tareas"
+                  className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
+                />
+              </label>
+              <div className="flex shrink-0 rounded-xl border border-border/80 bg-background p-1" aria-label="Modo de visualización">
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  variant={view === "list" ? "secondary" : "ghost"}
+                  aria-label="Ver en lista"
+                  aria-pressed={view === "list"}
+                  onClick={() => setView("list")}
+                  className="rounded-lg"
+                >
+                  <List aria-hidden="true" />
+                </Button>
+                <Button
+                  type="button"
+                  size="icon-sm"
+                  variant={view === "cards" ? "secondary" : "ghost"}
+                  aria-label="Ver en tarjetas"
+                  aria-pressed={view === "cards"}
+                  onClick={() => setView("cards")}
+                  className="rounded-lg"
+                >
+                  <LayoutGrid aria-hidden="true" />
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {tasksQuery.isPending ? (
+            <div className="rounded-2xl border border-dashed border-border bg-background px-6 py-16 text-center">
+              <div className="mx-auto mb-4 size-7 animate-spin rounded-full border-2 border-primary/20 border-t-primary" role="status" aria-label="Cargando tareas" />
+              <p className="text-sm text-muted-foreground">Cargando tus tareas...</p>
+            </div>
+          ) : tasksQuery.isError ? (
+            <div className="rounded-2xl border border-destructive/20 bg-background px-6 py-12 text-center">
+              <p className="font-medium">No pudimos cargar tus tareas</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Comprueba tu conexión e inténtalo de nuevo.
+              </p>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => void tasksQuery.refetch()}
+                className="mt-5 rounded-xl normal-case tracking-normal"
+              >
+                Reintentar
+              </Button>
+            </div>
+          ) : filteredTasks.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-border bg-background px-6 py-16 text-center">
+              <span className="mx-auto mb-4 flex size-12 items-center justify-center rounded-2xl bg-primary/5 text-primary">
+                <CalendarDays className="size-5" aria-hidden="true" />
+              </span>
+              <h2 className="font-semibold">
+                {tasks.length === 0 ? "Aún no tienes tareas" : "No encontramos tareas"}
+              </h2>
+              <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+                {tasks.length === 0
+                  ? "Crea tu primera tarea y empieza a organizar tu día."
+                  : "Prueba con otra búsqueda o cambia el filtro seleccionado."}
+              </p>
+              {tasks.length === 0 && (
+                <Button
+                  render={<Link to="/tasks/new" />}
+                  className="mt-5 rounded-xl normal-case tracking-normal"
+                >
+                  <Plus aria-hidden="true" />
+                  Crear primera tarea
+                </Button>
+              )}
+            </div>
+          ) : view === "list" ? (
+            <div className="overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm">
+              {filteredTasks.map((task) => (
+                <TaskListItem key={task.id} task={task} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {filteredTasks.map((task) => (
+                <TaskCard key={task.id} task={task} />
+              ))}
+            </div>
+          )}
+
+          {!tasksQuery.isPending && !tasksQuery.isError && filteredTasks.length > 0 && (
+            <p className="mt-4 text-right text-xs text-muted-foreground">
+              Mostrando {filteredTasks.length} de {tasks.length} tareas
+            </p>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+}
+
+export default TaskListPage;
