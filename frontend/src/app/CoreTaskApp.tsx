@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@/components/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import RouterApp from '@/app/router';
@@ -9,7 +10,9 @@ function CoreTaskApp() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterApp />
+      <ThemeProvider defaultTheme="dark" storageKey="coretask-ui-theme">
+        <RouterApp />
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
