@@ -1,3 +1,4 @@
-import TaskLayout from "./TaskLayout"
+import TaskLayout from "./TaskLayout";
+import TaskListPage from "./list/TaskListPage";
 
-export { TaskLayout }
+export { TaskLayout, TaskListPage };
