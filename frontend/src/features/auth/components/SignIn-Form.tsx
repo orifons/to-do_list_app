@@ -1,20 +1,21 @@
-import { cn } from "cn"
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { cn } from "cn";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { ButtonWithSpinner } from "@/components/shared/button-with-spinner";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { LogIn } from "lucide-react";
-import { loginSchema, type LoginFormData } from "../schema/sign-in";
-import { Spinner } from "@/components/ui/spinner";
+import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
 
 export function LoginForm({
   className,
@@ -69,7 +70,7 @@ export function LoginForm({
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
                   <LogIn className="mr-2 h-4 w-4" />
-                  {isSubmitting ? "Login" + <Spinner /> : "Login"}
+                  {isSubmitting ? <ButtonWithSpinner textValue="Logging in..." /> : "Login"}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

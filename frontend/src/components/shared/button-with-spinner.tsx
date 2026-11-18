@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 
-function ButtonWithSpinner({ children }: { children: React.ReactNode }) {
+function ButtonWithSpinner({ textValue }: { textValue: string }) {
   return (
     <Button >
       <Item variant="muted">
@@ -15,7 +15,7 @@ function ButtonWithSpinner({ children }: { children: React.ReactNode }) {
           <Spinner />
         </ItemMedia>
         <ItemContent>
-          <ItemTitle className="line-clamp-1">{children}</ItemTitle>
+          <ItemTitle className="line-clamp-1">{textValue}</ItemTitle>
         </ItemContent>
       </Item>
     </Button>
