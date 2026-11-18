@@ -3,7 +3,7 @@ import { cn } from "cn";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { ButtonWithSpinner } from "@/components/shared/button-with-spinner";
+import { SpinnerWithText } from "@/components/shared/spinner-with-text";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -70,7 +70,7 @@ export function LoginForm({
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
                   <LogIn className="mr-2 h-4 w-4" />
-                  {isSubmitting ? <ButtonWithSpinner textValue="Logging in..." /> : "Login"}
+                  {isSubmitting ? <SpinnerWithText textValue="Logging in..." /> : "Login"}
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
