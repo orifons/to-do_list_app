@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Item,
   ItemContent,
@@ -7,9 +6,9 @@ import {
 } from "@/components/ui/item";
 import { Spinner } from "@/components/ui/spinner";
 
-function ButtonWithSpinner({ textValue }: { textValue: string }) {
+function SpinnerWithText({ textValue }: { textValue: string }) {
   return (
-    <Button >
+    <div className="flex w-full max-w-xs flex-col gap-4 [--radius:1rem]">
       <Item variant="muted">
         <ItemMedia>
           <Spinner />
@@ -18,8 +17,8 @@ function ButtonWithSpinner({ textValue }: { textValue: string }) {
           <ItemTitle className="line-clamp-1">{textValue}</ItemTitle>
         </ItemContent>
       </Item>
-    </Button>
+    </div>
   )
 }
 
-export { ButtonWithSpinner };
+export { SpinnerWithText };
