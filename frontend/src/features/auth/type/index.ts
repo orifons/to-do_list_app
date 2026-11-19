@@ -16,6 +16,12 @@ export type User = {
   date_joined: Date;
 }
 
+export type SignInResponse = {
+  access: string;
+  refresh: string;
+  user: User;
+};
+
 const tokens = {
   access: "",
   refresh: "",
