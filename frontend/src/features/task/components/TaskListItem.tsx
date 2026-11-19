@@ -1,5 +1,4 @@
-import type { Task } from "@/features/task/types";
-import { taskTypeLabels } from "@/features/task/types";
+import { taskTypeLabels, type Task } from "@/features/task/types";
 import TaskMetadata from "./TaskMetaData";
 import TaskStatus from "./TaskStatus";
 import TaskTypeIcon from "./TaskTypeIcon";
