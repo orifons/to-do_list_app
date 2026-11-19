@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "@/configs/axios";
@@ -31,12 +31,16 @@ function getTasks(response: TaskResponse) {
 }
 
 function TaskListPage() {
-  const storageView = localStorage.getItem("tasks-mode-view")
-  const view: ViewMode = JSON.parse(storageView!) ?? "cards"
+  const storageView = localStorage.getItem("tasks-mode-view") as ViewMode
+  const view = storageView ?? "cards"
 
   const [viewMode, setViewMode] = useState<ViewMode>(view);
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("tasks-mode-view", viewMode)
+  }, [viewMode])
 
   const tasksQuery = useQuery({
     queryKey: ["tasks"],
