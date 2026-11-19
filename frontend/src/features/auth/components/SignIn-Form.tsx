@@ -84,8 +84,8 @@ export function LoginForm({
               </Field>
               <Field>
                 <Button type="submit" disabled={isSubmitting}>
-                  <LogIn className="mr-2 h-4 w-4" />
                   {isSubmitting ? <SpinnerWithText textValue="Logging in..." /> : "Login"}
+                  <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
