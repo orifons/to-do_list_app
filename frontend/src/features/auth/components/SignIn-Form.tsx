@@ -1,11 +1,11 @@
 import { cn } from "cn";
-
 import { useForm } from 'react-hook-form';
+import { useNavigate } from "react-router"
 import { zodResolver } from '@hookform/resolvers/zod';
 
-import { SpinnerWithText } from "@/components/shared/spinner-with-text";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import authStore from "@/features/auth/store/auth";
+import { authService } from "@/features/auth/services/auth";
+
 import {
   Field,
   FieldDescription,
@@ -13,14 +13,19 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { LogIn } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { SpinnerWithText } from "@/components/shared/spinner-with-text";
 import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate();
+
   // Inicializamos el hook con el resolver de Zod
   const {
     register,
@@ -32,8 +37,15 @@ export function LoginForm({
 
   // Función que se ejecuta si la validación pasa
   const onSubmit = async (data: LoginFormData) => {
-    console.log('Datos listos para enviar:', data);
-    // Aquí harías tu petición fetch o axios hacia tu backend en Node.js
+    // Aquí harías tu petición axios hacia tu backend
+    const response = await authService.signIn(data);
+
+    if (response.status === 200) {
+      const { access, refresh, user } = response.data;
+      authStore.getState().signIn(user, { access, refresh });
+      // Redirige a la lista de tareas después del login exitoso
+      navigate("/tasks", { replace: true });
+    }
   };
 
   return (

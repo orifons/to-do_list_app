@@ -16,12 +16,6 @@ export type User = {
   date_joined: Date;
 }
 
-export type SignInResponse = {
-  access: string;
-  refresh: string;
-  user: User;
-};
-
 const tokens = {
   access: "",
   refresh: "",
@@ -39,4 +33,22 @@ export type AuthState = typeof initialState & {
   setUser: (user: User | null) => void;
   signIn: (user: User | null, tokens: { access: string; refresh: string }) => void;
   signOut: () => void;
+};
+
+export type SignInResponse = {
+  access: string;
+  refresh: string;
+  user: User;
+};
+
+export type SignInRequest = {
+  username: string;
+  password: string;
+};
+
+export type RegisterRequest = {
+  username: string;
+  email?: string;
+  password: string;
+  confirmPassword: string;
 };
