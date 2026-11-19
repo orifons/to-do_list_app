@@ -10,8 +10,6 @@ export const authService = {
   signIn: async (data: SignInRequest): Promise<AxiosResponse<SignInResponse>> => {
     const SINGIN_URL: string = `${URL_BASE}/${API_URLS.auth.signIn}`
     const response = await axios.post<SignInResponse>(SINGIN_URL, data);
-    console.log("Respuesta del servicio SignIn:", response);
-
     return response;
   },
 
