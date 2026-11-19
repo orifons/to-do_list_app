@@ -31,8 +31,7 @@ function getTasks(response: TaskResponse) {
 }
 
 function TaskListPage() {
-  const storageView = localStorage.getItem("tasks-mode-view") as ViewMode
-  const view = storageView ?? "cards"
+  const view = localStorage.getItem("tasks-mode-view") as ViewMode ?? "cards"
 
   const [viewMode, setViewMode] = useState<ViewMode>(view);
   const [filter, setFilter] = useState<TaskFilter>("all");
