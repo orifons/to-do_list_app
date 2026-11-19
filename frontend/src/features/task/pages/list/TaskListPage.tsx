@@ -22,8 +22,7 @@ import type {
   TaskResponse,
 } from "@/features/task/types";
 import { ModeToggle } from "@/components/shared/mode-toggle";
-import TaskCard from "@/features/task/components/TaskCard";
-import TaskListItem from "@/features/task/components/TaskListItem";
+import { TaskCard, TaskListItem } from "@/features/task/components";
 
 const EMPTY_TASKS: Task[] = [];
 
