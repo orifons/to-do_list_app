@@ -1,181 +1,34 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import axiosInstance from "@/configs/axios";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
-  ArrowUpRight,
   CalendarDays,
   Check,
-  Circle,
   Clock3,
   LayoutGrid,
   List,
-  MapPin,
   Plus,
   Search,
-  Video,
 } from "lucide-react";
 
+import type {
+  Task,
+  ViewMode,
+  TaskFilter,
+  TaskResponse,
+} from "@/features/task/types";
 import { ModeToggle } from "@/components/shared/mode-toggle";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import axiosInstance from "@/configs/axios";
-
-type Task = {
-  id: number;
-  title: string;
-  description: string | null;
-  task_type: "task" | "appointment" | "conference";
-  due_date: string;
-  completed: boolean;
-  location: string | null;
-  meeting_link: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-type TaskResponse = Task[] | { results: Task[] };
-type TaskFilter = "all" | "pending" | "completed";
-type ViewMode = "list" | "cards";
+import TaskCard from "@/features/task/components/TaskCard";
+import TaskListItem from "@/features/task/components/TaskListItem";
 
 const EMPTY_TASKS: Task[] = [];
 
-const taskTypeLabels: Record<Task["task_type"], string> = {
-  task: "Tarea",
-  appointment: "Presencial",
-  conference: "Videollamada",
-};
-
-const dateFormatter = new Intl.DateTimeFormat("es", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-});
-
-const timeFormatter = new Intl.DateTimeFormat("es", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
 function getTasks(response: TaskResponse) {
   return Array.isArray(response) ? response : response.results;
-}
-
-function formatDueDate(value: string) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
-  return `${dateFormatter.format(date)} · ${timeFormatter.format(date)}`;
-}
-
-function TaskTypeIcon({ type }: { type: Task["task_type"] }) {
-  if (type === "appointment") return <MapPin aria-hidden="true" />;
-  if (type === "conference") return <Video aria-hidden="true" />;
-  return <Check aria-hidden="true" />;
-}
-
-function TaskMetadata({ task }: { task: Task }) {
-  return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-      <span className="inline-flex items-center gap-1.5">
-        <Clock3 className="size-3.5" aria-hidden="true" />
-        {formatDueDate(task.due_date)}
-      </span>
-      {task.location && (
-        <span className="inline-flex items-center gap-1.5">
-          <MapPin className="size-3.5" aria-hidden="true" />
-          {task.location}
-        </span>
-      )}
-      {task.meeting_link && (
-        <a
-          href={task.meeting_link}
-          target="_blank"
-          rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-primary hover:underline"
-        >
-          <Video className="size-3.5" aria-hidden="true" />
-          Unirse a la reunión
-          <ArrowUpRight className="size-3" aria-hidden="true" />
-        </a>
-      )}
-    </div>
-  );
-}
-
-function TaskStatus({ completed }: { completed: boolean }) {
-  return (
-    <span
-      className={
-        completed
-          ? "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400"
-          : "inline-flex shrink-0 items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400"
-      }
-    >
-      {completed ? (
-        <Check className="size-3" aria-hidden="true" />
-      ) : (
-        <Circle className="size-2.5" aria-hidden="true" />
-      )}
-      {completed ? "Completada" : "Pendiente"}
-    </span>
-  );
-}
-
-function TaskListItem({ task }: { task: Task }) {
-  return (
-    <article className="group flex flex-col gap-3 border-b border-border/70 px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5">
-      <div className="flex min-w-0 flex-1 items-start gap-3.5">
-        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
-          <TaskTypeIcon type={task.task_type} />
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="mb-1.5 flex flex-wrap items-center gap-2">
-            <h2 className={task.completed ? "font-medium text-muted-foreground line-through" : "font-semibold"}>
-              {task.title}
-            </h2>
-            <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
-              {taskTypeLabels[task.task_type]}
-            </span>
-          </div>
-          {task.description && (
-            <p className="mb-2 line-clamp-1 text-sm text-muted-foreground">
-              {task.description}
-            </p>
-          )}
-          <TaskMetadata task={task} />
-        </div>
-      </div>
-      <TaskStatus completed={task.completed} />
-    </article>
-  );
-}
-
-function TaskCard({ task }: { task: Task }) {
-  return (
-    <Card className="h-full rounded-2xl border-0 shadow-sm ring-1 ring-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
-      <CardContent className="flex h-full flex-col p-5">
-        <div className="mb-4 flex items-start justify-between gap-3">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/5 text-primary">
-            <TaskTypeIcon type={task.task_type} />
-          </span>
-          <TaskStatus completed={task.completed} />
-        </div>
-        <div className="mb-5">
-          <span className="mb-2 inline-block text-[10px] font-semibold tracking-[0.16em] text-muted-foreground uppercase">
-            {taskTypeLabels[task.task_type]}
-          </span>
-          <h2 className={task.completed ? "mb-2 font-semibold text-muted-foreground line-through" : "mb-2 font-semibold"}>
-            {task.title}
-          </h2>
-          <p className="line-clamp-3 min-h-5 text-sm leading-relaxed text-muted-foreground">
-            {task.description || "Sin descripción"}
-          </p>
-        </div>
-        <div className="mt-auto border-t border-border/70 pt-4">
-          <TaskMetadata task={task} />
-        </div>
-      </CardContent>
-    </Card>
-  );
 }
 
 function TaskListPage() {
