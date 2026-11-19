@@ -83,7 +83,7 @@ export function LoginForm({
                 )}
               </Field>
               <Field>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? <SpinnerWithText textValue="Logging in..." /> : "Login"}
                   <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
                 </Button>
