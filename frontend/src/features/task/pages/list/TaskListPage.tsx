@@ -31,7 +31,10 @@ function getTasks(response: TaskResponse) {
 }
 
 function TaskListPage() {
-  const [view, setView] = useState<ViewMode>("cards");
+  const storageView = localStorage.getItem("tasks-mode-view")
+  const view: ViewMode = JSON.parse(storageView!) ?? "cards"
+
+  const [viewMode, setViewMode] = useState<ViewMode>(view);
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [search, setSearch] = useState("");
 
@@ -178,10 +181,10 @@ function TaskListPage() {
                 <Button
                   type="button"
                   size="icon-sm"
-                  variant={view === "list" ? "secondary" : "ghost"}
+                  variant={viewMode === "list" ? "secondary" : "ghost"}
                   aria-label="Ver en lista"
-                  aria-pressed={view === "list"}
-                  onClick={() => setView("list")}
+                  aria-pressed={viewMode === "list"}
+                  onClick={() => setViewMode("list")}
                   className="rounded-lg"
                 >
                   <List aria-hidden="true" />
@@ -189,10 +192,10 @@ function TaskListPage() {
                 <Button
                   type="button"
                   size="icon-sm"
-                  variant={view === "cards" ? "secondary" : "ghost"}
+                  variant={viewMode === "cards" ? "secondary" : "ghost"}
                   aria-label="Ver en tarjetas"
-                  aria-pressed={view === "cards"}
-                  onClick={() => setView("cards")}
+                  aria-pressed={viewMode === "cards"}
+                  onClick={() => setViewMode("cards")}
                   className="rounded-lg"
                 >
                   <LayoutGrid aria-hidden="true" />
@@ -244,7 +247,7 @@ function TaskListPage() {
                 </Button>
               )}
             </div>
-          ) : view === "list" ? (
+          ) : viewMode === "list" ? (
             <div className="overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm">
               {filteredTasks.map((task) => (
                 <TaskListItem key={task.id} task={task} />
