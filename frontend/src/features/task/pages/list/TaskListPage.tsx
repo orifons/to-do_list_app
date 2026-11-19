@@ -31,7 +31,7 @@ function getTasks(response: TaskResponse) {
 }
 
 function TaskListPage() {
-  const [view, setView] = useState<ViewMode>("list");
+  const [view, setView] = useState<ViewMode>("cards");
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [search, setSearch] = useState("");
 
