@@ -25,6 +25,7 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const navigate = useNavigate();
+  const { signIn } = authStore()
 
   // Inicializamos el hook con el resolver de Zod
   const {
@@ -37,14 +38,16 @@ export function LoginForm({
 
   // Función que se ejecuta si la validación pasa
   const onSubmit = async (data: LoginFormData) => {
-    // Aquí harías tu petición axios hacia tu backend
-    const response = await authService.signIn(data);
+    try {
+      const response = await authService.signIn(data);
 
-    if (response.status === 200) {
-      const { access, refresh, user } = response.data;
-      authStore.getState().signIn(user, { access, refresh });
-      // Redirige a la lista de tareas después del login exitoso
-      navigate("/tasks", { replace: true });
+      if (response.status === 200) {
+        const { access, refresh, user } = response.data;
+        signIn(user, { access, refresh });
+        navigate("/tasks", { replace: true });
+      }
+    } catch (error) {
+      Promise.reject(error)
     }
   };
 
