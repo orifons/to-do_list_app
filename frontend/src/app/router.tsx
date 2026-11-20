@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 
 import { AuthLayout, LoginPage } from "@/features/auth/pages";
 import { TaskLayout, TaskListPage } from "@/features/task/pages";
@@ -14,6 +14,7 @@ const router = createBrowserRouter([
       { Component: TaskListPage, path: "/tasks" },
     ]
   },
+  { path: "*", element: <Navigate to="/tasks" replace /> },
 ]);
 
 export default function RouterApp() {
