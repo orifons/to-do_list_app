@@ -35,12 +35,6 @@ export type AuthState = typeof initialState & {
   signOut: () => void;
 };
 
-export type SignInResponse = {
-  access: string;
-  refresh: string;
-  user: User;
-};
-
 export type SignInRequest = {
   username: string;
   password: string;
@@ -49,6 +43,14 @@ export type SignInRequest = {
 export type RegisterRequest = {
   username: string;
   email?: string;
+  fistName: string;
+  lastName: string;
   password: string;
   confirmPassword: string;
+};
+
+export type SignInResponse = {
+  access: string;
+  refresh: string;
+  user: User;
 };

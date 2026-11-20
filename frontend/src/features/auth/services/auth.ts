@@ -18,12 +18,13 @@ export const authService = {
   },
 
   register: async (data: RegisterRequest) => {
-    const response = await axios.post(API_URLS.auth.register, data);
-    return response.data;
+    const SINGUP_URL: string = `${URL_BASE}/${API_URLS.auth.register}`
+    const response = await axios.post(SINGUP_URL, data);
+    return response;
   },
 
   getCurrentUser: async () => {
     const response = await axiosInstance.get(API_URLS.auth.getCurrentUser);
-    return response.data;
+    return response;
   },
 };
