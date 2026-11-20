@@ -1,10 +1,17 @@
+import axiosInstance from "@/configs/axios";
+import authStore from "@/features/auth/store/auth";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import axiosInstance from "@/configs/axios";
 
+import { ModeToggle } from "@/components/shared/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from "@/components/ui/avatar";
 import {
   CalendarDays,
   Check,
@@ -15,14 +22,13 @@ import {
   Search,
 } from "lucide-react";
 
+import { TaskCard, TaskListItem } from "@/features/task/components";
 import type {
   Task,
-  ViewMode,
   TaskFilter,
   TaskResponse,
+  ViewMode,
 } from "@/features/task/types";
-import { ModeToggle } from "@/components/shared/mode-toggle";
-import { TaskCard, TaskListItem } from "@/features/task/components";
 
 const EMPTY_TASKS: Task[] = [];
 
@@ -31,6 +37,7 @@ function getTasks(response: TaskResponse) {
 }
 
 function TaskListPage() {
+  const user = authStore.getState().user
   const view = localStorage.getItem("tasks-mode-view") as ViewMode ?? "cards"
 
   const [viewMode, setViewMode] = useState<ViewMode>(view);
@@ -86,6 +93,10 @@ function TaskListPage() {
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-muted-foreground sm:inline">Tu espacio de trabajo</span>
             <ModeToggle />
+            <Avatar size="lg">
+              <AvatarImage src={user?.avatar.image} alt={`@${user?.username}`} />
+              <AvatarFallback>{`${user?.first_name} ${user?.last_name}`}</AvatarFallback>
+            </Avatar>
           </div>
         </header>
 
@@ -270,8 +281,8 @@ function TaskListPage() {
             </p>
           )}
         </section>
-      </div>
-    </main>
+      </div >
+    </main >
   );
 }
 
