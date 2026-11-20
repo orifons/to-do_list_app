@@ -8,12 +8,12 @@ export const signUpSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers and underscores are allowed"),
   first_name: z
     .string()
-    .regex(/^[a-zA-Z]+$/, "Only letters")
-    .trim(),
+    .trim()
+    .optional(),
   last_name: z
     .string()
-    .regex(/^[a-zA-Z]+$/, "Only letters")
-    .trim(),
+    .trim()
+    .optional(),
   email: z
     .email("Please enter a valid email address")
     .trim(),
