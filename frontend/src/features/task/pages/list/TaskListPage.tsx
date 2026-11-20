@@ -114,6 +114,7 @@ function TaskListPage() {
               </p>
             </div>
             <Button
+              nativeButton={false}
               render={<Link to="/tasks/new" />}
               className="w-full rounded-xl normal-case tracking-normal sm:w-auto"
             >
@@ -253,6 +254,7 @@ function TaskListPage() {
               </p>
               {tasks.length === 0 && (
                 <Button
+                  nativeButton={false}
                   render={<Link to="/tasks/new" />}
                   className="mt-5 rounded-xl normal-case tracking-normal"
                 >
