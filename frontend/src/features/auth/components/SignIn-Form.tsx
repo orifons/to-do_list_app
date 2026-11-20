@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { LogIn } from "lucide-react";
 import { useForm } from 'react-hook-form';
 import { useNavigate } from "react-router"
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,17 +14,19 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
-import { LogIn } from "lucide-react";
+import { useTheme } from "@/components/theme";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SpinnerWithText } from "@/components/shared/spinner-with-text";
 import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
+import { ModeToggle } from "@/components/shared/mode-toggle";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { theme } = useTheme()
   const navigate = useNavigate();
   const { signIn } = authStore()
 
@@ -53,6 +56,7 @@ export function LoginForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <ModeToggle />
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
@@ -129,7 +133,7 @@ export function LoginForm({
             <img
               src="/logo-login.jpeg"
               alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.8]"
             />
           </div>
         </CardContent>
