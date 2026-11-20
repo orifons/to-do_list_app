@@ -16,7 +16,7 @@ function Navbar() {
         <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
           <Check className="size-5" aria-hidden="true" />
         </span>
-        <span className="font-semibold tracking-tight">coretask</span>
+        <span className="font-semibold tracking-tight">CoreTask</span>
       </Link>
       <div className="flex items-center gap-3">
         <span className="hidden text-sm sm:inline">
