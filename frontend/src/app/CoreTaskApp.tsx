@@ -1,12 +1,15 @@
+import { useEffect } from 'react';
 import { ThemeProvider } from '@/components/theme';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import RouterApp from '@/app/router';
 
-
 const queryClient = new QueryClient();
 
 function CoreTaskApp() {
+  useEffect(() => {
+    window.dispatchEvent(new Event('coretask:ready'));
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

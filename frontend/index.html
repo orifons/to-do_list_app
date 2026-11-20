@@ -1,12 +1,180 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CoreTask</title>
+    <script>
+      const savedTheme = localStorage.getItem('coretask-ui-theme');
+      const initialTheme =
+        savedTheme === 'light' || savedTheme === 'dark'
+          ? savedTheme
+          : savedTheme === 'system' &&
+              window.matchMedia('(prefers-color-scheme: light)').matches
+            ? 'light'
+            : 'dark';
+      document.documentElement.classList.add(initialTheme);
+
+      (() => {
+        let appReady = false;
+        let documentLoaded = document.readyState === 'complete';
+
+        const hideLoader = () => {
+          if (!appReady || !documentLoaded) return;
+
+          const loader = document.getElementById('app-loader');
+          if (!loader) return;
+
+          loader.dataset.state = 'hidden';
+          loader.setAttribute('aria-hidden', 'true');
+          loader.addEventListener('transitionend', () => loader.remove(), {
+            once: true,
+          });
+          window.setTimeout(() => loader.remove(), 400);
+        };
+
+        window.addEventListener(
+          'load',
+          () => {
+            documentLoaded = true;
+            hideLoader();
+          },
+          { once: true },
+        );
+        window.addEventListener(
+          'coretask:ready',
+          () => {
+            appReady = true;
+            hideLoader();
+          },
+          { once: true },
+        );
+
+        if (documentLoaded) hideLoader();
+      })();
+    </script>
+    <style>
+      :root {
+        color-scheme: dark;
+        --loader-background: #171513;
+        --loader-surface: #211f1c;
+        --loader-foreground: #f5f2ee;
+        --loader-muted: #a7a19a;
+        --loader-accent: #d6a86a;
+      }
+
+      :root.light {
+        color-scheme: light;
+        --loader-background: #f7f5f1;
+        --loader-surface: #ffffff;
+        --loader-foreground: #26221e;
+        --loader-muted: #81796f;
+        --loader-accent: #a66c2b;
+      }
+
+      #app-loader {
+        position: fixed;
+        z-index: 9999;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(ellipse at 50% 42%, color-mix(in srgb, var(--loader-accent) 9%, transparent), transparent 38%),
+          var(--loader-background);
+        color: var(--loader-foreground);
+        opacity: 1;
+        transition: opacity 280ms ease, visibility 280ms ease;
+      }
+
+      #app-loader[data-state='hidden'] {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .loader-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 18px;
+        animation: loader-enter 500ms ease both;
+      }
+
+      .loader-mark {
+        display: grid;
+        width: 68px;
+        height: 68px;
+        place-items: center;
+        border: 1px solid color-mix(in srgb, var(--loader-accent) 30%, transparent);
+        border-radius: 22px;
+        background: color-mix(in srgb, var(--loader-surface) 86%, transparent);
+        box-shadow: 0 12px 40px color-mix(in srgb, var(--loader-accent) 10%, transparent);
+      }
+
+      .loader-spinner {
+        width: 29px;
+        height: 29px;
+        border: 2px solid color-mix(in srgb, var(--loader-accent) 23%, transparent);
+        border-top-color: var(--loader-accent);
+        border-radius: 50%;
+        animation: loader-spin 850ms linear infinite;
+      }
+
+      .loader-brand {
+        font-family: 'Raleway', sans-serif;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+      }
+
+      .loader-caption {
+        margin-top: -12px;
+        color: var(--loader-muted);
+        font-family: 'Raleway', sans-serif;
+        font-size: 12px;
+        letter-spacing: 0.025em;
+      }
+
+      @keyframes loader-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @keyframes loader-enter {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .loader-content,
+        .loader-spinner {
+          animation: none;
+        }
+
+        #app-loader {
+          transition-duration: 1ms;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="app-loader" role="status" aria-label="Cargando CoreTask">
+      <div class="loader-content">
+        <div class="loader-mark" aria-hidden="true">
+          <div class="loader-spinner"></div>
+        </div>
+        <div class="loader-brand">CORETASK</div>
+        <div class="loader-caption">Preparando tu espacio...</div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
