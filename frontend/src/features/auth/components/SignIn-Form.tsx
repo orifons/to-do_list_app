@@ -14,7 +14,6 @@ import {
   FieldLabel,
   FieldSeparator,
 } from "@/components/ui/field";
-import { useTheme } from "@/components/theme";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -26,7 +25,6 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { theme } = useTheme()
   const navigate = useNavigate();
   const { signIn } = authStore()
 
