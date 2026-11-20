@@ -9,6 +9,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function Navbar() {
   const { user, signOut } = authStore()
+  const avatarFallBack = (user?.first_name && user.last_name)
+    ? `${user?.first_name.charAt(0)}${" "}${user.last_name.charAt(0)}`
+    : `${user?.username.includes("_")
+      ? user.username.split("_").map((part) => part.charAt(0)).join("").toUpperCase()
+      : user?.username.slice(0, 2).toUpperCase()}`
 
   return (
     <header className="mb-10 flex items-center justify-between border-b border-border/70 pb-5">
@@ -26,7 +31,7 @@ function Navbar() {
         </span>
         <Avatar size="lg">
           <AvatarImage src={user?.avatar.image} alt={`@${user?.username}`} />
-          <AvatarFallback>{`${user?.first_name} ${user?.last_name}`}</AvatarFallback>
+          <AvatarFallback><span className="font-extrabold">{avatarFallBack}</span></AvatarFallback>
         </Avatar>
         <ModeToggle />
         <Button
