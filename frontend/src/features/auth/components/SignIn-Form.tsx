@@ -17,9 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ModeToggle } from "@/components/shared/mode-toggle";
 import { SpinnerWithText } from "@/components/shared/spinner-with-text";
 import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
-import { ModeToggle } from "@/components/shared/mode-toggle";
 
 export function LoginForm({
   className,
