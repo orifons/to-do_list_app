@@ -1,7 +1,7 @@
 import { cn } from "cn";
 import { LogIn } from "lucide-react";
 import { useForm } from 'react-hook-form';
-import { useNavigate } from "react-router"
+import { Link, useNavigate } from "react-router";
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import authStore from "@/features/auth/store/auth";
@@ -123,7 +123,7 @@ export function LoginForm({
                 </Button>
               </Field>
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <a href="#">Sign up</a>
+                Don&apos;t have an account? <Link to={"/sign-up"}>Sign up</Link>
               </FieldDescription>
             </FieldGroup>
           </form>
