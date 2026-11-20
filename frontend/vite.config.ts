@@ -26,12 +26,12 @@ export default defineConfig({
     allowedHosts: [
       "localhost",
       "127.0.0.1",
-      "web.to-do-list.dev",
+      "web.coretask.dev",
     ],
 
     // hmr: {
     //   protocol: "ws",
-    //   host: "web.to-do-list.dev",
+    //   host: "web.coretask.dev",
     //   clientPort: 443,
     // }
   }
