@@ -42,11 +42,11 @@ export type SignInRequest = {
 
 export type RegisterRequest = {
   username: string;
-  email?: string;
-  fistName: string;
-  lastName: string;
+  first_name?: string;
+  last_name?: string;
+  email: string;
   password: string;
-  confirmPassword: string;
+  password_confirm: string;
 };
 
 export type SignInResponse = {

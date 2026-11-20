@@ -1,5 +1,7 @@
 import { cn } from "cn"
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -12,17 +14,44 @@ import {
   FieldSeparator,
 } from "@/components/ui/field"
 import { ModeToggle } from "@/components/shared/mode-toggle";
+import { authService } from "@/features/auth/services/auth";
+import { signUpSchema, type SignUpFormData } from "@/features/auth/schema/sign-up";
+import { type RegisterRequest } from "@/features/auth/type";
+import { LogIn } from "lucide-react";
+import { SpinnerWithText } from "@/components/shared/spinner-with-text";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const navigate = useNavigate()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignUpFormData>({
+    resolver: zodResolver(signUpSchema),
+  });
+
+  const onSubmit = async (data: SignUpFormData | RegisterRequest) => {
+    try {
+      const response = await authService.register(data);
+
+      if (response.status === 201) {
+        navigate("/sign-in", { replace: true });
+      }
+    } catch (error) {
+      Promise.reject(error)
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <ModeToggle />
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-8" onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Create your account</h1>
@@ -31,37 +60,103 @@ export function SignupForm({
                 </p>
               </div>
               <Field>
+                <FieldLabel htmlFor="username">Username</FieldLabel>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="ej. usuario_123"
+                  required
+                  {...register("username")}
+                />
+                {errors.username && (
+                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.username.message}</p>
+                )}
+              </Field>
+              <Field>
+                <Field className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel htmlFor="firstName">
+                      First Name
+                    </FieldLabel>
+                    <Input
+                      id="firstName"
+                      type="text"
+                      placeholder="ej. John"
+                      {...register("first_name")}
+                    />
+                    {errors.first_name && (
+                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.first_name.message}</p>
+                    )}
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="lastName">
+                      Last Name
+                    </FieldLabel>
+                    <Input
+                      id="lastName"
+                      type="text"
+                      placeholder="ej. Smmith"
+                      {...register("last_name")}
+                    />
+                    {errors.last_name && (
+                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.last_name.message}</p>
+                    )}
+                  </Field>
+                </Field>
+              </Field>
+              <Field>
                 <FieldLabel htmlFor="email">Email</FieldLabel>
                 <Input
                   id="email"
                   type="email"
                   placeholder="m@example.com"
                   required
+                  {...register("email")}
                 />
-                <FieldDescription>
-                  We&apos;ll use this to contact you. We will not share your
-                  email with anyone else.
-                </FieldDescription>
+                {errors.email && (
+                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.email.message}</p>
+                )}
               </Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
                   <Field>
                     <FieldLabel htmlFor="password">Password</FieldLabel>
-                    <Input id="password" type="password" required />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="****************"
+                      required
+                      {...register("password")}
+                    />
+                    {errors.password && (
+                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.password.message}</p>
+                    )}
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
                       Confirm Password
                     </FieldLabel>
-                    <Input id="confirm-password" type="password" required />
+                    <Input
+                      id="confirm-password"
+                      type="password"
+                      placeholder="****************"
+                      required
+                      {...register("password_confirm")}
+                    />
+                    {errors.password_confirm && (
+                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.password_confirm.message}</p>
+                    )}
                   </Field>
                 </Field>
-                <FieldDescription>
+                {/* <FieldDescription>
                   Must be at least 8 characters long.
-                </FieldDescription>
+                </FieldDescription> */}
               </Field>
               <Field>
-                <Button type="submit">Create Account</Button>
+                <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? <SpinnerWithText textValue="Creating Account..." /> : "Create Account"}
+                  <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
+                </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
                 Or continue with

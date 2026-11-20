@@ -6,16 +6,14 @@ export const signUpSchema = z.object({
     .min(3, "Username must be at least 3 characters long")
     .max(30, "Username cannot exceed 30 characters")
     .regex(/^[a-zA-Z0-9_]+$/, "Only letters, numbers and underscores are allowed"),
-  firstName: z
+  first_name: z
     .string()
-    .trim()
-    .min(2, "First name must be at least 2 characters long")
-    .max(50, "First name cannot exceed 50 characters"),
-  lastName: z
+    .regex(/^[a-zA-Z]+$/, "Only letters")
+    .trim(),
+  last_name: z
     .string()
-    .trim()
-    .min(2, "Last name must be at least 2 characters long")
-    .max(50, "Last name cannot exceed 50 characters"),
+    .regex(/^[a-zA-Z]+$/, "Only letters")
+    .trim(),
   email: z
     .email("Please enter a valid email address")
     .trim(),
@@ -23,12 +21,14 @@ export const signUpSchema = z.object({
     .string()
     .min(8, "Password must be at least 8 characters long")
     .max(100, "Password cannot exceed 100 characters"),
-  passwordConfirm: z
+  password_confirm: z
     .string()
     .min(8, "Password confirmation must be at least 8 characters long")
     .max(100, "Password confirmation cannot exceed 100 characters"),
 })
-  .refine((data) => data.password === data.passwordConfirm, {
+  .refine((data) => data.password === data.password_confirm, {
     message: "Passwords do not match",
-    path: ["passwordConfirm"],
+    path: ["password_confirm"],
   })
+
+export type SignUpFormData = z.infer<typeof signUpSchema>

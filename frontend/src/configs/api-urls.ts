@@ -1,7 +1,7 @@
 export const API_URLS = {
   auth: {
     signIn: "accounts/token/",
-    register: "accounts/user/",
+    register: "accounts/user/create/",
     getCurrentUser: "accounts/me/",
   },
   tasks: {
