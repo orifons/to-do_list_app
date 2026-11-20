@@ -1,17 +1,11 @@
 import axiosInstance from "@/configs/axios";
-import authStore from "@/features/auth/store/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 
-import { ModeToggle } from "@/components/shared/mode-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage
-} from "@/components/ui/avatar";
+import Navbar from "@/components/shared/navbar";
 import {
   CalendarDays,
   Check,
@@ -37,7 +31,6 @@ function getTasks(response: TaskResponse) {
 }
 
 function TaskListPage() {
-  const user = authStore.getState().user
   const view = localStorage.getItem("tasks-mode-view") as ViewMode ?? "cards"
 
   const [viewMode, setViewMode] = useState<ViewMode>(view);
@@ -83,22 +76,7 @@ function TaskListPage() {
   return (
     <main className="min-h-svh bg-muted/30">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-        <header className="mb-10 flex items-center justify-between border-b border-border/70 pb-5">
-          <Link to="/tasks" className="flex items-center gap-3" aria-label="CoreTask, tareas">
-            <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-              <Check className="size-5" aria-hidden="true" />
-            </span>
-            <span className="font-semibold tracking-tight">coretask</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-muted-foreground sm:inline">Tu espacio de trabajo</span>
-            <ModeToggle />
-            <Avatar size="lg">
-              <AvatarImage src={user?.avatar.image} alt={`@${user?.username}`} />
-              <AvatarFallback>{`${user?.first_name} ${user?.last_name}`}</AvatarFallback>
-            </Avatar>
-          </div>
-        </header>
+        <Navbar />
 
         <section aria-labelledby="tasks-heading">
           <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
