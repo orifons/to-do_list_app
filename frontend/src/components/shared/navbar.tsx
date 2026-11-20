@@ -30,6 +30,7 @@ function Navbar() {
         </Avatar>
         <ModeToggle />
         <Button
+          className={"rounded-3xl"}
           variant="outline"
           size="icon"
           onClick={signOut}
