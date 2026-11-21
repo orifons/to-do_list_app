@@ -1,6 +1,7 @@
 from jsonschema import ValidationError
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from drf_spectacular.utils import extend_schema_field
 
 from apps.main.models import Profile
 from apps.main.api.serializers import ProfileSerializer
@@ -15,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         exclude = ["password", "user_permissions", "groups"]
 
+    @extend_schema_field(ProfileSerializer)
     def get_avatar(self, obj=None):
         if not obj:
             return None
