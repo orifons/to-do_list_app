@@ -76,7 +76,7 @@ function TaskListPage() {
   ];
 
   return (
-    <main className="min-h-svh bg-muted/30">
+    <main className="min-h-svh bg-muted/95 dark:bg-muted/5">
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <Navbar />
 
