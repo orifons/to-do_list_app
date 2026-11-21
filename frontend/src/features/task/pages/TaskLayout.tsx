@@ -10,7 +10,9 @@ function TaskLayout() {
   }
 
   return (
-    <Outlet />
+    <main className="min-h-svh bg-muted/30">
+      <Outlet />
+    </main>
   )
 }
 
