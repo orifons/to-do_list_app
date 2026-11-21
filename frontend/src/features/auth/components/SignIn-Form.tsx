@@ -1,4 +1,5 @@
 import { cn } from "cn";
+import { toast } from "sonner";
 import { LogIn } from "lucide-react";
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from "react-router";
@@ -42,15 +43,20 @@ export function LoginForm({
 
   // Función que se ejecuta si la validación pasa
   const onSubmit = async (data: LoginFormData) => {
+    let successToastId: string | number | undefined;
+
     try {
+      successToastId = toast.success("Logging into the application...", { position: "top-center" });
       const response = await authService.signIn(data);
 
       if (response.status === 200) {
         const { access, refresh, user } = response.data;
         signIn(user, { access, refresh });
+        toast.dismiss(successToastId);
         navigate("/tasks", { replace: true });
       }
     } catch (error) {
+      if (successToastId !== undefined) toast.dismiss(successToastId);
       const { fieldErrors, message } = getApiError(error);
       const usernameError = fieldErrors.username;
       const passwordError = fieldErrors.password;
@@ -69,6 +75,7 @@ export function LoginForm({
       if (formError) {
         setError("root.server", { type: "server", message: formError });
       }
+      toast.error(message, { position: "top-center" })
     }
   };
 
@@ -100,11 +107,11 @@ export function LoginForm({
                 <Input id="password" type="password" placeholder="****************" {...register('password')} required />
                 <FieldError errors={[errors.password]} />
               </Field>
-              {errors.root?.server?.message && (
+              {/* {errors.root?.server?.message && (
                 <p role="alert" className="text-sm text-destructive">
                   {errors.root.server.message}
                 </p>
-              )}
+              )} */}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? <SpinnerWithText textValue="Logging in..." /> : "Login"}

@@ -1,4 +1,5 @@
 import { cn } from "cn"
+import { toast } from "sonner";
 import { Link, useNavigate } from "react-router";
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -37,13 +38,18 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: SignUpFormData) => {
+    let successToastId: string | number | undefined;
+
     try {
+      successToastId = toast.success("Creating your new account...", { position: "top-center" });
       const response = await authService.register(data);
 
       if (response.status === 201) {
+        toast.dismiss(successToastId);
         navigate("/sign-in", { replace: true });
       }
     } catch (error) {
+      if (successToastId !== undefined) toast.dismiss(successToastId);
       const { fieldErrors, message } = getApiError(error);
       const formErrorMessages = [message];
 
@@ -76,6 +82,7 @@ export function SignupForm({
       if (formError) {
         setError("root.server", { type: "server", message: formError });
       }
+      toast.error(message, { position: "top-center" })
     }
   };
 
@@ -173,11 +180,11 @@ export function SignupForm({
                   Must be at least 8 characters long.
                 </FieldDescription> */}
               </Field>
-              {errors.root?.server?.message && (
+              {/* {errors.root?.server?.message && (
                 <p role="alert" className="text-sm text-destructive">
                   {errors.root.server.message}
                 </p>
-              )}
+              )} */}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? <SpinnerWithText textValue="Creating Account..." /> : "Create Account"}
