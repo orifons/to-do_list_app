@@ -23,6 +23,7 @@ import type {
   TaskResponse,
   ViewMode,
 } from "@/features/task/types";
+import { getApiError } from "@/lib/api-error";
 
 const EMPTY_TASKS: Task[] = [];
 
@@ -48,6 +49,7 @@ function TaskListPage() {
       return getTasks(data);
     },
   });
+  const taskError = tasksQuery.isError ? getApiError(tasksQuery.error) : null;
 
   const tasks = tasksQuery.data ?? EMPTY_TASKS;
   const filteredTasks = useMemo(() => {
@@ -206,7 +208,7 @@ function TaskListPage() {
             <div className="rounded-2xl border border-destructive/20 bg-background px-6 py-12 text-center">
               <p className="font-medium">No pudimos cargar tus tareas</p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Comprueba tu conexión e inténtalo de nuevo.
+                {taskError?.message || "Comprueba tu conexión e inténtalo de nuevo."}
               </p>
               <Button
                 type="button"

@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
@@ -16,9 +17,9 @@ import {
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { authService } from "@/features/auth/services/auth";
 import { signUpSchema, type SignUpFormData } from "@/features/auth/schema/sign-up";
-import { type RegisterRequest } from "@/features/auth/type";
 import { LogIn } from "lucide-react";
 import { SpinnerWithText } from "@/components/shared/spinner-with-text";
+import { getApiError } from "@/lib/api-error";
 
 export function SignupForm({
   className,
@@ -29,12 +30,13 @@ export function SignupForm({
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data: SignUpFormData | RegisterRequest) => {
+  const onSubmit = async (data: SignUpFormData) => {
     try {
       const response = await authService.register(data);
 
@@ -42,7 +44,38 @@ export function SignupForm({
         navigate("/sign-in", { replace: true });
       }
     } catch (error) {
-      Promise.reject(error)
+      const { fieldErrors, message } = getApiError(error);
+      const formErrorMessages = [message];
+
+      for (const [field, fieldMessage] of Object.entries(fieldErrors)) {
+        switch (field) {
+          case "username":
+            setError("username", { type: "server", message: fieldMessage });
+            break;
+          case "first_name":
+            setError("first_name", { type: "server", message: fieldMessage });
+            break;
+          case "last_name":
+            setError("last_name", { type: "server", message: fieldMessage });
+            break;
+          case "email":
+            setError("email", { type: "server", message: fieldMessage });
+            break;
+          case "password":
+            setError("password", { type: "server", message: fieldMessage });
+            break;
+          case "password_confirm":
+            setError("password_confirm", { type: "server", message: fieldMessage });
+            break;
+          default:
+            formErrorMessages.push(fieldMessage);
+        }
+      }
+
+      const formError = formErrorMessages.filter(Boolean).join(" ");
+      if (formError) {
+        setError("root.server", { type: "server", message: formError });
+      }
     }
   };
 
@@ -68,9 +101,7 @@ export function SignupForm({
                   required
                   {...register("username")}
                 />
-                {errors.username && (
-                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.username.message}</p>
-                )}
+                <FieldError errors={[errors.username]} />
               </Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
@@ -84,9 +115,7 @@ export function SignupForm({
                       placeholder="ej. John"
                       {...register("first_name")}
                     />
-                    {errors.first_name && (
-                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.first_name.message}</p>
-                    )}
+                    <FieldError errors={[errors.first_name]} />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="lastName">
@@ -98,9 +127,7 @@ export function SignupForm({
                       placeholder="ej. Smmith"
                       {...register("last_name")}
                     />
-                    {errors.last_name && (
-                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.last_name.message}</p>
-                    )}
+                    <FieldError errors={[errors.last_name]} />
                   </Field>
                 </Field>
               </Field>
@@ -113,9 +140,7 @@ export function SignupForm({
                   required
                   {...register("email")}
                 />
-                {errors.email && (
-                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.email.message}</p>
-                )}
+                <FieldError errors={[errors.email]} />
               </Field>
               <Field>
                 <Field className="grid grid-cols-2 gap-4">
@@ -128,9 +153,7 @@ export function SignupForm({
                       required
                       {...register("password")}
                     />
-                    {errors.password && (
-                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.password.message}</p>
-                    )}
+                    <FieldError errors={[errors.password]} />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="confirm-password">
@@ -143,15 +166,18 @@ export function SignupForm({
                       required
                       {...register("password_confirm")}
                     />
-                    {errors.password_confirm && (
-                      <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.password_confirm.message}</p>
-                    )}
+                    <FieldError errors={[errors.password_confirm]} />
                   </Field>
                 </Field>
                 {/* <FieldDescription>
                   Must be at least 8 characters long.
                 </FieldDescription> */}
               </Field>
+              {errors.root?.server?.message && (
+                <p role="alert" className="text-sm text-destructive">
+                  {errors.root.server.message}
+                </p>
+              )}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? <SpinnerWithText textValue="Creating Account..." /> : "Create Account"}

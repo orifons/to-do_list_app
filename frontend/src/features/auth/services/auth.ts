@@ -1,15 +1,12 @@
-import axios, { type AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 
 import axiosInstance from "@/configs/axios";
 import { API_URLS } from "@/configs/api-urls";
 import type { RegisterRequest, SignInRequest, SignInResponse } from "@/features/auth/type";
 
-const URL_BASE: string = import.meta.env.VITE_API_BASE_URL
-
 export const authService = {
   signIn: async (data: SignInRequest): Promise<AxiosResponse<SignInResponse>> => {
-    const SINGIN_URL: string = `${URL_BASE}/${API_URLS.auth.signIn}`
-    const response = await axios.post<SignInResponse>(SINGIN_URL, data);
+    const response = await axiosInstance.post<SignInResponse>(API_URLS.auth.signIn, data);
     return response;
   },
 
@@ -18,8 +15,7 @@ export const authService = {
   },
 
   register: async (data: RegisterRequest) => {
-    const SINGUP_URL: string = `${URL_BASE}/${API_URLS.auth.register}`
-    const response = await axios.post(SINGUP_URL, data);
+    const response = await axiosInstance.post(API_URLS.auth.register, data);
     return response;
   },
 

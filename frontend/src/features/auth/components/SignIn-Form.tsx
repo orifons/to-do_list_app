@@ -10,6 +10,7 @@ import { authService } from "@/features/auth/services/auth";
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
@@ -20,6 +21,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { SpinnerWithText } from "@/components/shared/spinner-with-text";
 import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
+import { getApiError } from "@/lib/api-error";
 
 export function LoginForm({
   className,
@@ -32,6 +34,7 @@ export function LoginForm({
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -48,7 +51,24 @@ export function LoginForm({
         navigate("/tasks", { replace: true });
       }
     } catch (error) {
-      Promise.reject(error)
+      const { fieldErrors, message } = getApiError(error);
+      const usernameError = fieldErrors.username;
+      const passwordError = fieldErrors.password;
+      const otherFieldErrors = Object.entries(fieldErrors)
+        .filter(([field]) => field !== "username" && field !== "password")
+        .map(([, fieldMessage]) => fieldMessage);
+
+      if (usernameError) {
+        setError("username", { type: "server", message: usernameError });
+      }
+      if (passwordError) {
+        setError("password", { type: "server", message: passwordError });
+      }
+
+      const formError = [message, ...otherFieldErrors].filter(Boolean).join(" ");
+      if (formError) {
+        setError("root.server", { type: "server", message: formError });
+      }
     }
   };
 
@@ -68,9 +88,7 @@ export function LoginForm({
               <Field>
                 <FieldLabel htmlFor="username">Username</FieldLabel>
                 <Input id="username" type="text" placeholder="ej. usuario_123" {...register('username')} required />
-                {errors.username && (
-                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.username.message}</p>
-                )}
+                <FieldError errors={[errors.username]} />
               </Field>
               <Field>
                 <div className="flex items-center">
@@ -80,10 +98,13 @@ export function LoginForm({
                   </a>
                 </div>
                 <Input id="password" type="password" placeholder="****************" {...register('password')} required />
-                {errors.password && (
-                  <p style={{ color: 'red', fontSize: '0.85rem' }}>{errors.password.message}</p>
-                )}
+                <FieldError errors={[errors.password]} />
               </Field>
+              {errors.root?.server?.message && (
+                <p role="alert" className="text-sm text-destructive">
+                  {errors.root.server.message}
+                </p>
+              )}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
                   {isSubmitting ? <SpinnerWithText textValue="Logging in..." /> : "Login"}
