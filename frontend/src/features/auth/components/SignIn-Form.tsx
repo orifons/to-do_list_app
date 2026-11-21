@@ -43,20 +43,21 @@ export function LoginForm({
 
   // Función que se ejecuta si la validación pasa
   const onSubmit = async (data: LoginFormData) => {
-    let successToastId: string | number | undefined;
-
     try {
-      successToastId = toast.success("Logging into the application...", { position: "top-center" });
       const response = await authService.signIn(data);
 
       if (response.status === 200) {
         const { access, refresh, user } = response.data;
+
         signIn(user, { access, refresh });
-        toast.dismiss(successToastId);
         navigate("/tasks", { replace: true });
+
+        toast.success(
+          "You have successfully logged into your CoreTask account.",
+          { position: "top-center" }
+        );
       }
     } catch (error) {
-      if (successToastId !== undefined) toast.dismiss(successToastId);
       const { fieldErrors, message } = getApiError(error);
       const usernameError = fieldErrors.username;
       const passwordError = fieldErrors.password;
