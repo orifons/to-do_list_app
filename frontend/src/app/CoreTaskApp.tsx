@@ -13,7 +13,7 @@ function AppToaster() {
   return (
     <Toaster
       theme={theme}
-      position="bottom-right"
+      position="top-center"
       closeButton
       richColors
       visibleToasts={4}
