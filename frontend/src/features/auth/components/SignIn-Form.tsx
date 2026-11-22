@@ -20,7 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ModeToggle } from "@/components/shared/mode-toggle";
-import { SpinnerWithText } from "@/components/shared/spinner-with-text";
+import { TextWithLoader } from "@/components/text-with-loader";
 import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
 import { getApiError } from "@/lib/api-error";
 
@@ -115,7 +115,9 @@ export function LoginForm({
               )} */}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? <SpinnerWithText textValue="Logging in..." /> : "Login"}
+                  {isSubmitting
+                    ? < TextWithLoader textValue="Signing in..." />
+                    : "Sign in"}
                   <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
                 </Button>
               </Field>

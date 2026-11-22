@@ -19,7 +19,7 @@ import { ModeToggle } from "@/components/shared/mode-toggle";
 import { authService } from "@/features/auth/services/auth";
 import { signUpSchema, type SignUpFormData } from "@/features/auth/schema/sign-up";
 import { LogIn } from "lucide-react";
-import { SpinnerWithText } from "@/components/shared/spinner-with-text";
+import { TextWithLoader } from "@/components/text-with-loader";
 import { getApiError } from "@/lib/api-error";
 
 export function SignupForm({
@@ -187,7 +187,7 @@ export function SignupForm({
               )} */}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? <SpinnerWithText textValue="Creating Account..." /> : "Create Account"}
+                  {isSubmitting ? <TextWithLoader textValue="Creating Account..." /> : "Create Account"}
                   <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
                 </Button>
               </Field>
