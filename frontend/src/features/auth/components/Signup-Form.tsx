@@ -50,9 +50,11 @@ export function SignupForm({
       }
     } catch (error) {
       const { fieldErrors, message } = getApiError(error);
-      const formErrorMessages = [message];
+      const formErrorMessages = message ? [message] : [];
 
       for (const [field, fieldMessage] of Object.entries(fieldErrors)) {
+        if (fieldMessage) formErrorMessages.push(fieldMessage);
+
         switch (field) {
           case "username":
             setError("username", { type: "server", message: fieldMessage });
@@ -72,16 +74,14 @@ export function SignupForm({
           case "password_confirm":
             setError("password_confirm", { type: "server", message: fieldMessage });
             break;
-          default:
-            formErrorMessages.push(fieldMessage);
         }
       }
 
-      const formError = formErrorMessages.filter(Boolean).join(" ");
+      const formError = [...new Set(formErrorMessages)].join(" ");
       if (formError) {
         setError("root.server", { type: "server", message: formError });
+        toast.error(formError, { position: "top-center" });
       }
-      toast.error(formError, { position: "top-center" })
     }
   };
 
