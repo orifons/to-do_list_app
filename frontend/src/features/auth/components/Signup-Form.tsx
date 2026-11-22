@@ -1,7 +1,8 @@
 import { cn } from "cn"
 import { toast } from "sonner";
-import { Link, useNavigate } from "react-router";
 import { useForm } from 'react-hook-form';
+import { Link, useNavigate } from "react-router";
+import { LoaderCircle, UserPlus } from "lucide-react";
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Input } from "@/components/ui/input"
@@ -18,8 +19,6 @@ import {
 import { ModeToggle } from "@/components/shared/mode-toggle";
 import { authService } from "@/features/auth/services/auth";
 import { signUpSchema, type SignUpFormData } from "@/features/auth/schema/sign-up";
-import { LogIn } from "lucide-react";
-import { TextWithLoader } from "@/components/text-with-loader";
 import { getApiError } from "@/lib/api-error";
 
 export function SignupForm({
@@ -38,18 +37,18 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: SignUpFormData) => {
-    let successToastId: string | number | undefined;
-
     try {
-      successToastId = toast.success("Creating your new account...", { position: "top-center" });
       const response = await authService.register(data);
 
       if (response.status === 201) {
-        toast.dismiss(successToastId);
         navigate("/sign-in", { replace: true });
+
+        toast.success(
+          "Your account has been created successfully.",
+          { position: "top-center" }
+        );
       }
     } catch (error) {
-      if (successToastId !== undefined) toast.dismiss(successToastId);
       const { fieldErrors, message } = getApiError(error);
       const formErrorMessages = [message];
 
@@ -82,7 +81,7 @@ export function SignupForm({
       if (formError) {
         setError("root.server", { type: "server", message: formError });
       }
-      toast.error(message, { position: "top-center" })
+      toast.error(formError, { position: "top-center" })
     }
   };
 
@@ -187,8 +186,14 @@ export function SignupForm({
               )} */}
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? <TextWithLoader textValue="Creating Account..." /> : "Create Account"}
-                  <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
+                  {isSubmitting
+                    ? "Creating Account..."
+                    : "Create Account"
+                  }
+                  {isSubmitting
+                    ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    : <UserPlus className="mr-2 h-4 w-4" />
+                  }
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">

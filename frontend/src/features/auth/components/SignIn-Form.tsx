@@ -1,8 +1,8 @@
 import { cn } from "cn";
 import { toast } from "sonner";
-import { LogIn } from "lucide-react";
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from "react-router";
+import { LoaderCircle, LogIn } from "lucide-react";
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import authStore from "@/features/auth/store/auth";
@@ -20,7 +20,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ModeToggle } from "@/components/shared/mode-toggle";
-import { TextWithLoader } from "@/components/text-with-loader";
 import { loginSchema, type LoginFormData } from "@/features/auth/schema/sign-in";
 import { getApiError } from "@/lib/api-error";
 
@@ -76,7 +75,7 @@ export function LoginForm({
       if (formError) {
         setError("root.server", { type: "server", message: formError });
       }
-      toast.error(message, { position: "top-center" })
+      toast.error(formError, { position: "top-center" })
     }
   };
 
@@ -116,9 +115,13 @@ export function LoginForm({
               <Field>
                 <Button className="flex flex-row w-full justify-between" type="submit" disabled={isSubmitting}>
                   {isSubmitting
-                    ? < TextWithLoader textValue="Signing in..." />
-                    : "Sign in"}
-                  <LogIn className={`mr-2 h-4 w-4 ${isSubmitting ? "hidden" : ""}`} />
+                    ? "Signing in..."
+                    : "Sign in"
+                  }
+                  {isSubmitting
+                    ? <LoaderCircle className="mr-2 h-4 w-4 animate-spin" />
+                    : <LogIn className="mr-2 h-4 w-4" />
+                  }
                 </Button>
               </Field>
               <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
