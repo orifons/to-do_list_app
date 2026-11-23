@@ -52,8 +52,8 @@ export function LoginForm({
         navigate("/tasks", { replace: true });
 
         toast.success(
-          "You have successfully logged into your CoreTask account.",
-          { position: "top-center" }
+          "You have successfully logged in.",
+          { position: "top-center", duration: 2500 }
         );
       }
     } catch (error) {
