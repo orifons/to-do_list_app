@@ -30,16 +30,16 @@ import type { Task } from "@/features/task/types";
 import { getApiError } from "@/lib/api-error";
 
 const taskTypes = [
-  { value: "task", label: "Tarea", description: "Algo que quieres completar" },
+  { value: "task", label: "Task", description: "Something you want to get done" },
   {
     value: "appointment",
-    label: "Presencial",
-    description: "Una cita o reunión",
+    label: "In person",
+    description: "An appointment or meeting",
   },
   {
     value: "conference",
-    label: "Videollamada",
-    description: "Una reunión en línea",
+    label: "Video call",
+    description: "An online meeting",
   },
 ] as const;
 
@@ -48,15 +48,15 @@ const createTaskSchema = z
     title: z
       .string()
       .trim()
-      .min(1, "Escribe un título para la tarea.")
-      .max(255, "El título no puede superar los 255 caracteres."),
+      .min(1, "Enter a task title.")
+      .max(255, "The title cannot exceed 255 characters."),
     description: z.string().trim(),
     task_type: z.enum(["task", "appointment", "conference"]),
     due_date: z
       .string()
-      .min(1, "Selecciona la fecha y hora.")
+      .min(1, "Select a date and time.")
       .refine((value) => !Number.isNaN(new Date(value).getTime()), {
-        message: "Introduce una fecha y hora válidas.",
+        message: "Enter a valid date and time.",
       }),
     location: z.string().trim(),
     meeting_link: z.string().trim(),
@@ -65,7 +65,7 @@ const createTaskSchema = z
     if (values.task_type === "appointment" && !values.location) {
       context.addIssue({
         code: "custom",
-        message: "Indica dónde será la cita o reunión.",
+        message: "Enter the appointment or meeting location.",
         path: ["location"],
       });
     }
@@ -74,7 +74,7 @@ const createTaskSchema = z
       if (!values.meeting_link) {
         context.addIssue({
           code: "custom",
-          message: "Introduce el enlace de la videollamada.",
+          message: "Enter the video call link.",
           path: ["meeting_link"],
         });
       } else {
@@ -86,7 +86,7 @@ const createTaskSchema = z
         } catch {
           context.addIssue({
             code: "custom",
-            message: "Introduce un enlace válido que comience con http:// o https://.",
+            message: "Enter a valid link starting with http:// or https://.",
             path: ["meeting_link"],
           });
         }
@@ -139,7 +139,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
       axiosInstance.post<Task>(API_URLS.tasks.createTask, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("La tarea se creó correctamente.");
+      toast.success("Task created successfully.");
       reset();
       onOpenChange(false);
     },
@@ -163,7 +163,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
 
       const errorMessage =
         [message, ...Object.values(fieldErrors)].filter(Boolean).join(" ") ||
-        "No se pudo crear la tarea. Inténtalo de nuevo.";
+        "Unable to create the task. Please try again.";
       setError("root.server", { type: "server", message: errorMessage });
       toast.error(errorMessage);
     },
@@ -203,10 +203,10 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
             <CalendarClock className="size-5" aria-hidden="true" />
           </div>
           <DialogTitle className="text-xl font-semibold tracking-tight">
-            Nueva tarea
+            New task
           </DialogTitle>
           <DialogDescription>
-            Añade los detalles para organizar tu próxima actividad.
+            Add details to organize your next activity.
           </DialogDescription>
         </DialogHeader>
 
@@ -216,7 +216,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
               type="button"
               variant="ghost"
               size="icon-sm"
-              aria-label="Cerrar formulario"
+              aria-label="Close form"
               disabled={createTaskMutation.isPending}
               className="absolute top-4 right-4 rounded-full"
             />
@@ -229,11 +229,11 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
           <FieldGroup className="gap-4 px-6 py-5 sm:px-7">
             <Field>
               <FieldLabel htmlFor="task-title">
-                Título <span aria-hidden="true" className="text-destructive">*</span>
+                Title <span aria-hidden="true" className="text-destructive">*</span>
               </FieldLabel>
               <Input
                 id="task-title"
-                placeholder="Ej. Preparar presentación"
+                placeholder="e.g. Prepare a presentation"
                 maxLength={255}
                 autoFocus
                 required
@@ -244,10 +244,10 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
             </Field>
 
             <Field>
-              <FieldLabel htmlFor="task-description">Descripción</FieldLabel>
+              <FieldLabel htmlFor="task-description">Description</FieldLabel>
               <Textarea
                 id="task-description"
-                placeholder="Añade notas o detalles (opcional)"
+                placeholder="Add notes or details (optional)"
                 rows={3}
                 aria-invalid={Boolean(errors.description)}
                 {...register("description")}
@@ -257,7 +257,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
 
             <fieldset className="flex flex-col gap-2">
               <legend className="mb-1 text-sm font-medium">
-                Tipo de actividad
+                Activity type
               </legend>
               <div className="grid gap-2 sm:grid-cols-3">
                 {taskTypes.map((type) => (
@@ -287,7 +287,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
 
             <Field>
               <FieldLabel htmlFor="task-due-date">
-                Fecha y hora <span aria-hidden="true" className="text-destructive">*</span>
+                Date and time <span aria-hidden="true" className="text-destructive">*</span>
               </FieldLabel>
               <Input
                 id="task-due-date"
@@ -297,7 +297,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
                 {...register("due_date")}
               />
               <FieldDescription>
-                La fecha y hora se guardan según tu zona horaria.
+                The date and time are saved according to your time zone.
               </FieldDescription>
               <FieldError errors={[errors.due_date]} />
             </Field>
@@ -305,7 +305,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
             {selectedTaskType === "appointment" && (
               <Field>
                 <FieldLabel htmlFor="task-location">
-                  Ubicación{" "}
+                  Location{" "}
                   <span aria-hidden="true" className="text-destructive">
                     *
                   </span>
@@ -325,7 +325,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
             {selectedTaskType === "conference" && (
               <Field>
                 <FieldLabel htmlFor="task-meeting-link">
-                  Enlace de videollamada{" "}
+                  Video call link{" "}
                   <span aria-hidden="true" className="text-destructive">
                     *
                   </span>
@@ -353,7 +353,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
               className="rounded-xl"
               onClick={() => handleOpenChange(false)}
             >
-              Cancelar
+              Cancel
             </Button>
             <Button
               type="submit"
@@ -365,7 +365,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
               ) : (
                 <Plus aria-hidden="true" />
               )}
-              {createTaskMutation.isPending ? "Creando..." : "Crear tarea"}
+              {createTaskMutation.isPending ? "Creating..." : "Create task"}
             </Button>
           </DialogFooter>
         </form>

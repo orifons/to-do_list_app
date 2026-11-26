@@ -94,7 +94,7 @@ export function LoginForm({
               </div>
               <Field>
                 <FieldLabel htmlFor="username">Username</FieldLabel>
-                <Input id="username" type="text" placeholder="ej. usuario_123" {...register('username')} required />
+                <Input id="username" type="text" placeholder="e.g. user_123" {...register('username')} required />
                 <FieldError errors={[errors.username]} />
               </Field>
               <Field>

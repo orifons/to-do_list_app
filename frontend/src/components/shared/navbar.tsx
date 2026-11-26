@@ -17,11 +17,11 @@ function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 mb-8 border-b border-border/70 backdrop-blur-3xl">
-      <nav className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6" aria-label="Navegación principal">
+      <nav className="mx-auto flex h-18 max-w-6xl items-center justify-between px-4 sm:px-6" aria-label="Main navigation">
         <Link
           to="/tasks"
           className="group flex items-center gap-3 rounded-lg outline-none transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="CoreTask, tareas"
+          aria-label="CoreTask, tasks"
         >
           <span className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform group-hover:scale-[1.03]">
             <Check className="size-4.5" strokeWidth={3} aria-hidden="true" />
@@ -31,7 +31,7 @@ function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <div className="mr-1 hidden items-center text-sm md:flex">
-            <span className="text-muted-foreground">Tu espacio de trabajo</span>
+            <span className="text-muted-foreground">Your workspace</span>
             <span className="ml-1.5 font-semibold text-foreground">{user?.username}</span>
           </div>
 
@@ -50,10 +50,10 @@ function Navbar() {
             variant="ghost"
             size="icon"
             onClick={signOut}
-            title="Cerrar sesión"
+            title="Sign out"
           >
             <LogOut className="size-4" />
-            <span className="sr-only">Cerrar sesión</span>
+            <span className="sr-only">Sign out</span>
           </Button>
         </div>
       </nav>

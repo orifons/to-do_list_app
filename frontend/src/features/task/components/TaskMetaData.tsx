@@ -15,7 +15,7 @@ const timeFormatter = new Intl.DateTimeFormat("en", {
 
 function formatDueDate(value: string) {
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Fecha no disponible";
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
   return `${dateFormatter.format(date)} · ${timeFormatter.format(date)}`;
 }
 
@@ -40,7 +40,7 @@ function TaskMetadata({ task }: { task: Task }) {
           className="inline-flex items-center gap-1.5 text-primary hover:underline"
         >
           <Video className="size-3.5" aria-hidden="true" />
-          Unirse a la reunión
+          Join meeting
           <ArrowUpRight className="size-3" aria-hidden="true" />
         </a>
       )}

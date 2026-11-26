@@ -16,9 +16,9 @@ export type TaskFilter = "all" | "pending" | "completed";
 export type ViewMode = "list" | "cards";
 
 const taskTypeLabels: Record<Task["task_type"], string> = {
-  task: "Tarea",
-  appointment: "Presencial",
-  conference: "Videollamada",
+  task: "Task",
+  appointment: "In person",
+  conference: "Video call",
 };
 
 export { taskTypeLabels }

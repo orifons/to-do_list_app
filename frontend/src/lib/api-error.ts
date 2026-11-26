@@ -30,21 +30,21 @@ function extractMessages(value: unknown): string[] {
 export function getApiError(error: unknown): ApiError {
   if (!axios.isAxiosError(error)) {
     return {
-      message: "Ocurrió un error inesperado. Inténtalo de nuevo.",
+      message: "An unexpected error occurred. Please try again.",
       fieldErrors: {},
     };
   }
 
   if (!error.response) {
     return {
-      message: "No pudimos conectar con el servidor. Comprueba tu conexión e inténtalo de nuevo.",
+      message: "We couldn't connect to the server. Check your connection and try again.",
       fieldErrors: {},
     };
   }
 
   if (error.response.status >= 500) {
     return {
-      message: "El servidor tuvo un problema. Inténtalo de nuevo más tarde.",
+      message: "The server encountered a problem. Please try again later.",
       fieldErrors: {},
     };
   }
@@ -69,8 +69,8 @@ export function getApiError(error: unknown): ApiError {
   if (generalMessages.length === 0 && Object.keys(fieldErrors).length === 0) {
     generalMessages.push(
       error.response.status === 401
-        ? "No se pudo iniciar sesión. Revisa tus credenciales."
-        : "No se pudo completar la solicitud. Inténtalo de nuevo."
+        ? "Unable to sign in. Check your credentials."
+        : "Unable to complete the request. Please try again."
     );
   }
 

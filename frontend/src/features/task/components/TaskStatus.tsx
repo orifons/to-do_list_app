@@ -14,7 +14,7 @@ function TaskStatus({ completed }: { completed: boolean }) {
       ) : (
         <Circle className="size-2.5" aria-hidden="true" />
       )}
-      {completed ? "Completada" : "Pendiente"}
+      {completed ? "Completed" : "Pending"}
     </span>
   );
 }

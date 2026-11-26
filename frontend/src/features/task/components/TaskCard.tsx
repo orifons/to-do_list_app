@@ -23,7 +23,7 @@ function TaskCard({ task }: { task: Task }) {
             {task.title}
           </h2>
           <p className="line-clamp-3 min-h-5 text-sm leading-relaxed text-muted-foreground">
-            {task.description || "Sin descripción"}
+            {task.description || "No description"}
           </p>
         </div>
         <div className="mt-auto border-t border-border/70 pt-4">

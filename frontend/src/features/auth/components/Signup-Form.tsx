@@ -103,7 +103,7 @@ export function SignupForm({
                 <Input
                   id="username"
                   type="text"
-                  placeholder="ej. usuario_123"
+                  placeholder="e.g. user_123"
                   required
                   {...register("username")}
                 />
@@ -118,7 +118,7 @@ export function SignupForm({
                     <Input
                       id="firstName"
                       type="text"
-                      placeholder="ej. John"
+                      placeholder="e.g. John"
                       {...register("first_name")}
                     />
                     <FieldError errors={[errors.first_name]} />
@@ -130,7 +130,7 @@ export function SignupForm({
                     <Input
                       id="lastName"
                       type="text"
-                      placeholder="ej. Smmith"
+                      placeholder="e.g. Smith"
                       {...register("last_name")}
                     />
                     <FieldError errors={[errors.last_name]} />
@@ -236,7 +236,7 @@ export function SignupForm({
           <div className="relative hidden bg-muted md:block">
             <img
               src="/logo-login-color.jpeg"
-              alt="Image"
+              alt="Illustration of a person organizing a to-do list"
               className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.8]"
             />
           </div>

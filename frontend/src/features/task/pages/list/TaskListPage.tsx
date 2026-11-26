@@ -57,7 +57,7 @@ function TaskListPage() {
 
   const tasks = tasksQuery.data ?? EMPTY_TASKS;
   const filteredTasks = useMemo(() => {
-    const normalizedSearch = search.trim().toLocaleLowerCase("es");
+    const normalizedSearch = search.trim().toLocaleLowerCase("en");
     return tasks.filter((task) => {
       const matchesFilter =
         filter === "all" ||
@@ -65,7 +65,7 @@ function TaskListPage() {
       const matchesSearch =
         !normalizedSearch ||
         `${task.title} ${task.description ?? ""}`
-          .toLocaleLowerCase("es")
+          .toLocaleLowerCase("en")
           .includes(normalizedSearch);
       return matchesFilter && matchesSearch;
     });
@@ -74,9 +74,9 @@ function TaskListPage() {
   const pendingCount = tasks.filter((task) => !task.completed).length;
   const completedCount = tasks.length - pendingCount;
   const filters: { id: TaskFilter; label: string; count: number }[] = [
-    { id: "all", label: "Todas", count: tasks.length },
-    { id: "pending", label: "Pendientes", count: pendingCount },
-    { id: "completed", label: "Completadas", count: completedCount },
+    { id: "all", label: "All", count: tasks.length },
+    { id: "pending", label: "Pending", count: pendingCount },
+    { id: "completed", label: "Completed", count: completedCount },
   ];
 
   return (
@@ -86,13 +86,13 @@ function TaskListPage() {
         <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
             <p className="mb-2 text-xs font-semibold tracking-[0.2em] text-primary uppercase">
-              Organiza tu día
+              Organize your day
             </p>
             <h1 id="tasks-heading" className="text-3xl font-semibold tracking-tight sm:text-4xl">
-              Mis tareas<span className="text-primary">.</span>
+              My tasks<span className="text-primary">.</span>
             </h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Todo lo que tienes por hacer, en un solo lugar.
+              Everything you need to do, all in one place.
             </p>
           </div>
           <Button
@@ -101,7 +101,7 @@ function TaskListPage() {
             className="w-full rounded-xl normal-case tracking-normal sm:w-auto"
           >
             <Plus aria-hidden="true" />
-            Nueva tarea
+            New task
           </Button>
         </div>
 
@@ -112,7 +112,7 @@ function TaskListPage() {
                 <CalendarDays className="size-5" aria-hidden="true" />
               </span>
               <div>
-                <p className="text-xs text-muted-foreground">Total de tareas</p>
+                <p className="text-xs text-muted-foreground">Total tasks</p>
                 <p className="text-xl font-semibold">{tasks.length}</p>
               </div>
             </CardContent>
@@ -123,7 +123,7 @@ function TaskListPage() {
                 <Clock3 className="size-5" aria-hidden="true" />
               </span>
               <div>
-                <p className="text-xs text-muted-foreground">Por completar</p>
+                <p className="text-xs text-muted-foreground">To complete</p>
                 <p className="text-xl font-semibold">{pendingCount}</p>
               </div>
             </CardContent>
@@ -134,7 +134,7 @@ function TaskListPage() {
                 <Check className="size-5" aria-hidden="true" />
               </span>
               <div>
-                <p className="text-xs text-muted-foreground">Completadas</p>
+                <p className="text-xs text-muted-foreground">Completed</p>
                 <p className="text-xl font-semibold">{completedCount}</p>
               </div>
             </CardContent>
@@ -142,7 +142,7 @@ function TaskListPage() {
         </div>
 
         <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex gap-1 overflow-x-auto" aria-label="Filtrar tareas">
+          <div className="flex gap-1 overflow-x-auto" aria-label="Filter tasks">
             {filters.map((item) => (
               <button
                 key={item.id}
@@ -169,17 +169,17 @@ function TaskListPage() {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Buscar tareas..."
-                aria-label="Buscar tareas"
+                placeholder="Search tasks..."
+                aria-label="Search tasks"
                 className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
               />
             </label>
-            <div className="flex shrink-0 rounded-xl border border-border/80 bg-background p-1" aria-label="Modo de visualización">
+            <div className="flex shrink-0 rounded-xl border border-border/80 bg-background p-1" aria-label="View mode">
               <Button
                 type="button"
                 size="icon-sm"
                 variant={viewMode === "list" ? "secondary" : "ghost"}
-                aria-label="Ver en lista"
+                aria-label="View as list"
                 aria-pressed={viewMode === "list"}
                 onClick={() => setViewMode("list")}
                 className="rounded-lg"
@@ -190,7 +190,7 @@ function TaskListPage() {
                 type="button"
                 size="icon-sm"
                 variant={viewMode === "cards" ? "secondary" : "ghost"}
-                aria-label="Ver en tarjetas"
+                aria-label="View as cards"
                 aria-pressed={viewMode === "cards"}
                 onClick={() => setViewMode("cards")}
                 className="rounded-lg"
@@ -203,14 +203,14 @@ function TaskListPage() {
 
         {tasksQuery.isPending ? (
           <div className="rounded-2xl border border-dashed border-border bg-background px-6 py-16 text-center">
-            <div className="mx-auto mb-4 size-7 animate-spin rounded-full border-2 border-primary/20 border-t-primary" role="status" aria-label="Cargando tareas" />
-            <p className="text-sm text-muted-foreground">Cargando tus tareas...</p>
+            <div className="mx-auto mb-4 size-7 animate-spin rounded-full border-2 border-primary/20 border-t-primary" role="status" aria-label="Loading tasks" />
+            <p className="text-sm text-muted-foreground">Loading your tasks...</p>
           </div>
         ) : tasksQuery.isError ? (
           <div className="rounded-2xl border border-destructive/20 bg-background px-6 py-12 text-center">
-            <p className="font-medium">No pudimos cargar tus tareas</p>
+            <p className="font-medium">We couldn't load your tasks</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {taskError?.message || "Comprueba tu conexión e inténtalo de nuevo."}
+              {taskError?.message || "Check your connection and try again."}
             </p>
             <Button
               type="button"
@@ -218,7 +218,7 @@ function TaskListPage() {
               onClick={() => void tasksQuery.refetch()}
               className="mt-5 rounded-xl normal-case tracking-normal"
             >
-              Reintentar
+              Try again
             </Button>
           </div>
         ) : filteredTasks.length === 0 ? (
@@ -227,12 +227,12 @@ function TaskListPage() {
               <CalendarDays className="size-5" aria-hidden="true" />
             </span>
             <h2 className="font-semibold">
-              {tasks.length === 0 ? "Aún no tienes tareas" : "No encontramos tareas"}
+              {tasks.length === 0 ? "You don't have any tasks yet" : "No tasks found"}
             </h2>
             <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
               {tasks.length === 0
-                ? "Crea tu primera tarea y empieza a organizar tu día."
-                : "Prueba con otra búsqueda o cambia el filtro seleccionado."}
+                ? "Create your first task and start organizing your day."
+                : "Try a different search or change the selected filter."}
             </p>
             {tasks.length === 0 && (
               <Button
@@ -241,7 +241,7 @@ function TaskListPage() {
                 className="mt-5 rounded-xl normal-case tracking-normal"
               >
                 <Plus aria-hidden="true" />
-                Crear primera tarea
+                Create your first task
               </Button>
             )}
           </div>
@@ -261,7 +261,7 @@ function TaskListPage() {
 
         {!tasksQuery.isPending && !tasksQuery.isError && filteredTasks.length > 0 && (
           <p className="mt-4 text-right text-xs text-muted-foreground">
-            Mostrando {filteredTasks.length} de {tasks.length} tareas
+            Showing {filteredTasks.length} of {tasks.length} tasks
           </p>
         )}
       </section>
