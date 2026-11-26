@@ -1,0 +1,28 @@
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes theme-label-exit {
+    to {
+      opacity: 0;
+      transform: translateX(-0.75rem);
+    }
+  }
+
+  @keyframes theme-label-enter {
+    from {
+      opacity: 0;
+      transform: translateX(0.75rem);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .theme-label-exit {
+    animation: theme-label-exit 180ms ease-in forwards;
+  }
+
+  .theme-label-enter {
+    animation: theme-label-enter 220ms ease-out both;
+  }
+}
