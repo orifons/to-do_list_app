@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 
+import Navbar from "@/components/shared/navbar";
 import authStore from "@/features/auth/store/auth";
 
 function TaskLayout() {
@@ -11,6 +12,7 @@ function TaskLayout() {
 
   return (
     <main className="min-h-svh bg-muted/30">
+      <Navbar />
       <Outlet />
     </main>
   )

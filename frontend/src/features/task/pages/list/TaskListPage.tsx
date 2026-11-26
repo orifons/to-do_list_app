@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import Navbar from "@/components/shared/navbar";
 import {
   CalendarDays,
   Check,
@@ -80,8 +79,7 @@ function TaskListPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
-      <Navbar />
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 sm:py-12 lg:px-8">
       <section aria-labelledby="tasks-heading">
         <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
