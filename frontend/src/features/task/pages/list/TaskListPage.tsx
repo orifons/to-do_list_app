@@ -1,7 +1,6 @@
 import axiosInstance from "@/configs/axios";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,7 +15,11 @@ import {
   Search,
 } from "lucide-react";
 
-import { TaskCard, TaskListItem } from "@/features/task/components";
+import {
+  CreateTaskDialog,
+  TaskCard,
+  TaskListItem,
+} from "@/features/task/components";
 import type {
   Task,
   TaskFilter,
@@ -37,6 +40,7 @@ function TaskListPage() {
   const [viewMode, setViewMode] = useState<ViewMode>(view);
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [search, setSearch] = useState("");
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("tasks-mode-view", viewMode)
@@ -92,8 +96,8 @@ function TaskListPage() {
             </p>
           </div>
           <Button
-            nativeButton={false}
-            render={<Link to="/tasks/new" />}
+            type="button"
+            onClick={() => setIsCreateDialogOpen(true)}
             className="w-full rounded-xl normal-case tracking-normal sm:w-auto"
           >
             <Plus aria-hidden="true" />
@@ -232,8 +236,8 @@ function TaskListPage() {
             </p>
             {tasks.length === 0 && (
               <Button
-                nativeButton={false}
-                render={<Link to="/tasks/new" />}
+                type="button"
+                onClick={() => setIsCreateDialogOpen(true)}
                 className="mt-5 rounded-xl normal-case tracking-normal"
               >
                 <Plus aria-hidden="true" />
@@ -261,7 +265,11 @@ function TaskListPage() {
           </p>
         )}
       </section>
-    </div >
+      <CreateTaskDialog
+        open={isCreateDialogOpen}
+        onOpenChange={setIsCreateDialogOpen}
+      />
+    </div>
   );
 }
 

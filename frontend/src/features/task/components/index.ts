@@ -1,4 +1,5 @@
 export { default as TaskCard } from "./TaskCard";
+export { default as CreateTaskDialog } from "./CreateTaskDialog";
 export { default as TaskListItem } from "./TaskListItem";
 export { default as TaskMetaData } from "./TaskMetaData";
 export { default as TaskStatus } from "./TaskStatus";
