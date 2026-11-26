@@ -19,4 +19,5 @@ class TimeStampedModel(models.Model):
 @receiver(models.signals.pre_save)
 def my_handler(sender, instance, **kwargs):
     if issubclass(sender, TimeStampedModel):
-        print(f"El {sender._meta.model_name} se ha actualizado")
+        # print(f"El {sender._meta.model_name} se ha actualizado")
+        pass

@@ -20,9 +20,7 @@ class TaskItemSerializer(TimeStampedModelSerializer):
         read_only_fields = ["id", "created_at", "updated_at"]
 
     def validate(self, attrs):
-        print("Validating attrs:", attrs)
         data = attrs
-        print("Validating data:", data)
         # Obtener el tipo de tarea (considerando creación o actualización parcial/total)
         task_type = data.get(
             "task_type", getattr(self.instance, "task_type", TaskItem.TaskType.TASK)
