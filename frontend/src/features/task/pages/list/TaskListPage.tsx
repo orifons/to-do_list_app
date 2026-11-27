@@ -79,7 +79,7 @@ function TaskListPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 sm:py-12 lg:px-8">
+    <>
       <section aria-labelledby="tasks-heading">
         <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
           <div>
@@ -267,7 +267,7 @@ function TaskListPage() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
       />
-    </div>
+    </>
   );
 }
 

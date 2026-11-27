@@ -12,8 +12,10 @@ function TaskLayout() {
 
   return (
     <main className="min-h-svh bg-muted/30">
-      <Navbar />
-      <Outlet />
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 sm:py-12 lg:px-8">
+        <Navbar />
+        <Outlet />
+      </div>
     </main>
   )
 }
