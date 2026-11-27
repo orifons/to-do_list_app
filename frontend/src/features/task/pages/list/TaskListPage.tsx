@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 import {
-  CreateTaskDialog,
+  TaskFormDialog,
   TaskDetailDialog,
   TaskCard,
   TaskListItem,
@@ -42,6 +42,7 @@ function TaskListPage() {
   const [search, setSearch] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
+  const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
   useEffect(() => {
     localStorage.setItem("tasks-mode-view", viewMode)
@@ -273,15 +274,27 @@ function TaskListPage() {
           </p>
         )}
       </section>
-      <CreateTaskDialog
+      <TaskFormDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
+        task={null}
       />
       <TaskDetailDialog
         taskId={selectedTaskId}
+        onEditTask={(task) => {
+          setSelectedTaskId(null);
+          setTaskToEdit(task);
+        }}
         onOpenChange={(open) => {
           if (!open) setSelectedTaskId(null);
         }}
+      />
+      <TaskFormDialog
+        open={taskToEdit !== null}
+        onOpenChange={(open) => {
+          if (!open) setTaskToEdit(null);
+        }}
+        task={taskToEdit}
       />
     </>
   );

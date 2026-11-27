@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { CalendarClock, Clock3, LoaderCircle, MapPin, Video, X } from "lucide-react";
+import { CalendarClock, Clock3, LoaderCircle, MapPin, Pencil, Video, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +21,7 @@ import TaskTypeIcon from "./TaskTypeIcon";
 type TaskDetailDialogProps = {
   taskId: number | null;
   onOpenChange: (open: boolean) => void;
+  onEditTask: (task: Task) => void;
 };
 
 function formatDateTime(value: string) {
@@ -33,7 +34,7 @@ function formatDateTime(value: string) {
   }).format(date);
 }
 
-function TaskDetailDialog({ taskId, onOpenChange }: TaskDetailDialogProps) {
+function TaskDetailDialog({ taskId, onOpenChange, onEditTask }: TaskDetailDialogProps) {
   const open = taskId !== null;
   const taskQuery = useQuery({
     queryKey: ["tasks", taskId],
@@ -171,6 +172,16 @@ function TaskDetailDialog({ taskId, onOpenChange }: TaskDetailDialogProps) {
                 <dd className="mt-1 text-sm">{formatDateTime(task.updated_at)}</dd>
               </div>
             </dl>
+            <div className="flex justify-end border-t border-border/70 pt-5">
+              <Button
+                type="button"
+                onClick={() => onEditTask(task)}
+                className="rounded-xl"
+              >
+                <Pencil aria-hidden="true" />
+                Edit task
+              </Button>
+            </div>
           </div>
         ) : null}
       </DialogContent>

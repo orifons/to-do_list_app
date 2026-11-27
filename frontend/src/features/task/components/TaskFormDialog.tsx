@@ -1,7 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CalendarClock, LoaderCircle, Plus, X } from "lucide-react";
+import { CalendarClock, LoaderCircle, Plus, Save, X } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -43,7 +44,7 @@ const taskTypes = [
   },
 ] as const;
 
-const createTaskSchema = z
+const taskFormSchema = z
   .object({
     title: z
       .string()
@@ -60,6 +61,7 @@ const createTaskSchema = z
       }),
     location: z.string().trim(),
     meeting_link: z.string().trim(),
+    completed: z.boolean(),
   })
   .superRefine((values, context) => {
     if (values.task_type === "appointment" && !values.location) {
@@ -94,24 +96,43 @@ const createTaskSchema = z
     }
   });
 
-type CreateTaskFormValues = z.infer<typeof createTaskSchema>;
-type CreateTaskPayload = Pick<
+type TaskFormValues = z.infer<typeof taskFormSchema>;
+type TaskPayload = Pick<
   Task,
   | "title"
   | "description"
   | "task_type"
   | "due_date"
-  | "completed"
   | "location"
   | "meeting_link"
+  | "completed"
 >;
 
-type CreateTaskDialogProps = {
+type TaskFormDialogProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  task: Task | null;
 };
 
-function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
+const emptyFormValues: TaskFormValues = {
+  title: "",
+  description: "",
+  task_type: "task",
+  due_date: "",
+  location: "",
+  meeting_link: "",
+  completed: false,
+};
+
+function toLocalDateTimeInput(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 16);
+}
+
+function TaskFormDialog({ open, onOpenChange, task }: TaskFormDialogProps) {
   const queryClient = useQueryClient();
   const {
     register,
@@ -120,26 +141,39 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
     reset,
     setError,
     formState: { errors },
-  } = useForm<CreateTaskFormValues>({
-    resolver: zodResolver(createTaskSchema),
+  } = useForm<TaskFormValues>({
+    resolver: zodResolver(taskFormSchema),
     mode: "onBlur",
-    defaultValues: {
-      title: "",
-      description: "",
-      task_type: "task",
-      due_date: "",
-      location: "",
-      meeting_link: "",
-    },
+    defaultValues: emptyFormValues,
   });
 
+  useEffect(() => {
+    if (!open) return;
+
+    reset(
+      task
+        ? {
+            title: task.title,
+            description: task.description ?? "",
+            task_type: task.task_type,
+            due_date: toLocalDateTimeInput(task.due_date),
+            location: task.location ?? "",
+            meeting_link: task.meeting_link ?? "",
+            completed: task.completed,
+          }
+        : emptyFormValues,
+    );
+  }, [open, reset, task]);
+
   const selectedTaskType = watch("task_type");
-  const createTaskMutation = useMutation({
-    mutationFn: (payload: CreateTaskPayload) =>
-      axiosInstance.post<Task>(API_URLS.tasks.createTask, payload),
+  const saveTaskMutation = useMutation({
+    mutationFn: (payload: TaskPayload) =>
+      task
+        ? axiosInstance.patch<Task>(API_URLS.tasks.updateTask(task.id), payload)
+        : axiosInstance.post<Task>(API_URLS.tasks.createTask, payload),
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["tasks"] });
-      toast.success("Task created successfully.");
+      toast.success(task ? "Task updated successfully." : "Task created successfully.");
       reset();
       onOpenChange(false);
     },
@@ -152,6 +186,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
         "due_date",
         "location",
         "meeting_link",
+        "completed",
       ] as const;
 
       for (const field of formFieldNames) {
@@ -163,33 +198,34 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
 
       const errorMessage =
         [message, ...Object.values(fieldErrors)].filter(Boolean).join(" ") ||
-        "Unable to create the task. Please try again.";
+        `Unable to ${task ? "update" : "create"} the task. Please try again.`;
       setError("root.server", { type: "server", message: errorMessage });
       toast.error(errorMessage);
     },
   });
 
   const handleOpenChange = (nextOpen: boolean) => {
-    if (!nextOpen && !createTaskMutation.isPending) {
+    if (!nextOpen && saveTaskMutation.isPending) return;
+    if (!nextOpen) {
       reset();
     }
     onOpenChange(nextOpen);
   };
 
-  const onSubmit = (values: CreateTaskFormValues) => {
-    const payload: CreateTaskPayload = {
+  const onSubmit = (values: TaskFormValues) => {
+    const payload: TaskPayload = {
       title: values.title,
       description: values.description || null,
       task_type: values.task_type,
       due_date: new Date(values.due_date).toISOString(),
-      completed: false,
+      completed: values.completed,
       location:
         values.task_type === "appointment" ? values.location : null,
       meeting_link:
         values.task_type === "conference" ? values.meeting_link : null,
     };
 
-    createTaskMutation.mutate(payload);
+    saveTaskMutation.mutate(payload);
   };
 
   return (
@@ -202,11 +238,13 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
           <div className="mb-1 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <CalendarClock className="size-5" aria-hidden="true" />
           </div>
-          <DialogTitle className="text-xl font-semibold tracking-tight">
-            New task
+          <DialogTitle id="task-form-title" className="text-xl font-semibold tracking-tight">
+            {task ? "Edit task" : "New task"}
           </DialogTitle>
           <DialogDescription>
-            Add details to organize your next activity.
+            {task
+              ? "Update the task details and save your changes."
+              : "Add details to organize your next activity."}
           </DialogDescription>
         </DialogHeader>
 
@@ -217,7 +255,7 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
               variant="ghost"
               size="icon-sm"
               aria-label="Close form"
-              disabled={createTaskMutation.isPending}
+              disabled={saveTaskMutation.isPending}
               className="absolute top-4 right-4 rounded-full"
             />
           }
@@ -225,7 +263,11 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
           <X aria-hidden="true" />
         </DialogClose>
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        <form
+          aria-labelledby="task-form-title"
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+        >
           <FieldGroup className="gap-4 px-6 py-5 sm:px-7">
             <Field>
               <FieldLabel htmlFor="task-title">
@@ -238,9 +280,10 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
                 autoFocus
                 required
                 aria-invalid={Boolean(errors.title)}
+                aria-describedby={errors.title ? "task-title-error" : undefined}
                 {...register("title")}
               />
-              <FieldError errors={[errors.title]} />
+              <FieldError id="task-title-error" errors={[errors.title]} />
             </Field>
 
             <Field>
@@ -250,9 +293,10 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
                 placeholder="Add notes or details (optional)"
                 rows={3}
                 aria-invalid={Boolean(errors.description)}
+                aria-describedby={errors.description ? "task-description-error" : undefined}
                 {...register("description")}
               />
-              <FieldError errors={[errors.description]} />
+              <FieldError id="task-description-error" errors={[errors.description]} />
             </Field>
 
             <fieldset className="flex flex-col gap-2">
@@ -294,12 +338,13 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
                 type="datetime-local"
                 required
                 aria-invalid={Boolean(errors.due_date)}
+                aria-describedby={errors.due_date ? "task-due-date-error" : undefined}
                 {...register("due_date")}
               />
               <FieldDescription>
                 The date and time are saved according to your time zone.
               </FieldDescription>
-              <FieldError errors={[errors.due_date]} />
+              <FieldError id="task-due-date-error" errors={[errors.due_date]} />
             </Field>
 
             {selectedTaskType === "appointment" && (
@@ -316,9 +361,10 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
                   maxLength={255}
                   required
                   aria-invalid={Boolean(errors.location)}
+                  aria-describedby={errors.location ? "task-location-error" : undefined}
                   {...register("location")}
                 />
-                <FieldError errors={[errors.location]} />
+                <FieldError id="task-location-error" errors={[errors.location]} />
               </Field>
             )}
 
@@ -336,20 +382,41 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
                   placeholder="https://..."
                   required
                   aria-invalid={Boolean(errors.meeting_link)}
+                  aria-describedby={errors.meeting_link ? "task-meeting-link-error" : undefined}
                   {...register("meeting_link")}
                 />
-                <FieldError errors={[errors.meeting_link]} />
+                <FieldError id="task-meeting-link-error" errors={[errors.meeting_link]} />
               </Field>
             )}
 
-            <FieldError errors={[errors.root?.server]} />
+            {task && (
+              <Field>
+                <label
+                  htmlFor="task-completed"
+                  className="flex items-center gap-2 text-sm font-medium"
+                >
+                  <input
+                    id="task-completed"
+                    type="checkbox"
+                    className="size-4 accent-primary"
+                    {...register("completed")}
+                  />
+                  Mark as completed
+                </label>
+              </Field>
+            )}
+
+            <FieldError
+              id="task-form-server-error"
+              errors={[errors.root?.server]}
+            />
           </FieldGroup>
 
           <DialogFooter className="border-t border-border/70 px-6 py-4 sm:px-7">
             <Button
               type="button"
               variant="outline"
-              disabled={createTaskMutation.isPending}
+              disabled={saveTaskMutation.isPending}
               className="rounded-xl"
               onClick={() => handleOpenChange(false)}
             >
@@ -357,15 +424,23 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
             </Button>
             <Button
               type="submit"
-              disabled={createTaskMutation.isPending}
+              disabled={saveTaskMutation.isPending}
               className="rounded-xl"
             >
-              {createTaskMutation.isPending ? (
+              {saveTaskMutation.isPending ? (
                 <LoaderCircle className="animate-spin" aria-hidden="true" />
+              ) : task ? (
+                <Save aria-hidden="true" />
               ) : (
                 <Plus aria-hidden="true" />
               )}
-              {createTaskMutation.isPending ? "Creating..." : "Create task"}
+              {saveTaskMutation.isPending
+                ? task
+                  ? "Saving..."
+                  : "Creating..."
+                : task
+                  ? "Save changes"
+                  : "Create task"}
             </Button>
           </DialogFooter>
         </form>
@@ -374,4 +449,4 @@ function CreateTaskDialog({ open, onOpenChange }: CreateTaskDialogProps) {
   );
 }
 
-export default CreateTaskDialog;
+export default TaskFormDialog;
