@@ -1,5 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
-import { CalendarClock, Clock3, LoaderCircle, MapPin, Pencil, Video, X } from "lucide-react";
+import {
+  CalendarClock,
+  Clock3,
+  LoaderCircle,
+  MapPin,
+  Pencil,
+  Trash2,
+  Video,
+  X,
+} from "lucide-react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +25,7 @@ import axiosInstance from "@/configs/axios";
 import type { Task } from "@/features/task/types";
 import { taskTypeLabels } from "@/features/task/types";
 import { getApiError } from "@/lib/api-error";
+import DeleteTaskDialog from "./DeleteTaskDialog";
 import TaskStatus from "./TaskStatus";
 import TaskTypeIcon from "./TaskTypeIcon";
 
@@ -35,6 +46,7 @@ function formatDateTime(value: string) {
 }
 
 function TaskDetailDialog({ taskId, onOpenChange, onEditTask }: TaskDetailDialogProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const open = taskId !== null;
   const taskQuery = useQuery({
     queryKey: ["tasks", taskId],
@@ -172,7 +184,16 @@ function TaskDetailDialog({ taskId, onOpenChange, onEditTask }: TaskDetailDialog
                 <dd className="mt-1 text-sm">{formatDateTime(task.updated_at)}</dd>
               </div>
             </dl>
-            <div className="flex justify-end border-t border-border/70 pt-5">
+            <div className="flex flex-wrap justify-end gap-2 border-t border-border/70 pt-5">
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="rounded-xl"
+              >
+                <Trash2 aria-hidden="true" />
+                Delete task
+              </Button>
               <Button
                 type="button"
                 onClick={() => onEditTask(task)}
@@ -185,6 +206,17 @@ function TaskDetailDialog({ taskId, onOpenChange, onEditTask }: TaskDetailDialog
           </div>
         ) : null}
       </DialogContent>
+      {task && (
+        <DeleteTaskDialog
+          task={task}
+          open={isDeleteDialogOpen}
+          onOpenChange={setIsDeleteDialogOpen}
+          onDeleted={() => {
+            setIsDeleteDialogOpen(false);
+            onOpenChange(false);
+          }}
+        />
+      )}
     </Dialog>
   );
 }
