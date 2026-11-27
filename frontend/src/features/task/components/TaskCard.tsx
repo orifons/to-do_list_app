@@ -1,11 +1,18 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { taskTypeLabels, type Task } from "@/features/task/types";
 
 import TaskMetadata from "@/features/task/components/TaskMetaData";
 import TaskStatus from "@/features/task/components/TaskStatus";
 import TaskTypeIcon from "@/features/task/components/TaskTypeIcon";
 
-function TaskCard({ task }: { task: Task }) {
+function TaskCard({
+  task,
+  onViewDetails,
+}: {
+  task: Task;
+  onViewDetails: (taskId: number) => void;
+}) {
   return (
     <Card className="h-full rounded-2xl border-0 shadow-sm ring-1 ring-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
       <CardContent className="flex h-full flex-col p-5">
@@ -26,8 +33,18 @@ function TaskCard({ task }: { task: Task }) {
             {task.description || "No description"}
           </p>
         </div>
-        <div className="mt-auto border-t border-border/70 pt-4">
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-border/70 pt-4">
           <TaskMetadata task={task} />
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            aria-label={`View details for ${task.title}`}
+            onClick={() => onViewDetails(task.id)}
+            className="rounded-xl"
+          >
+            View details
+          </Button>
         </div>
       </CardContent>
     </Card>

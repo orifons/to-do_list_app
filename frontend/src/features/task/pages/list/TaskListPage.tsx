@@ -16,6 +16,7 @@ import {
 
 import {
   CreateTaskDialog,
+  TaskDetailDialog,
   TaskCard,
   TaskListItem,
 } from "@/features/task/components";
@@ -40,6 +41,7 @@ function TaskListPage() {
   const [filter, setFilter] = useState<TaskFilter>("all");
   const [search, setSearch] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
 
   useEffect(() => {
     localStorage.setItem("tasks-mode-view", viewMode)
@@ -246,13 +248,21 @@ function TaskListPage() {
         ) : viewMode === "list" ? (
           <div className="overflow-hidden rounded-2xl border border-border/80 bg-background shadow-sm">
             {filteredTasks.map((task) => (
-              <TaskListItem key={task.id} task={task} />
+              <TaskListItem
+                key={task.id}
+                task={task}
+                onViewDetails={setSelectedTaskId}
+              />
             ))}
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {filteredTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                onViewDetails={setSelectedTaskId}
+              />
             ))}
           </div>
         )}
@@ -266,6 +276,12 @@ function TaskListPage() {
       <CreateTaskDialog
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
+      />
+      <TaskDetailDialog
+        taskId={selectedTaskId}
+        onOpenChange={(open) => {
+          if (!open) setSelectedTaskId(null);
+        }}
       />
     </>
   );

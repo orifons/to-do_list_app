@@ -7,6 +7,7 @@ export const API_URLS = {
   tasks: {
     getTasks: "tasks/",
     createTask: "tasks/",
+    getTask: (taskId: number) => `tasks/${taskId}/`,
     updateTask: (taskId: number) => `tasks/${taskId}/`,
     deleteTask: (taskId: number) => `tasks/${taskId}/`,
   }

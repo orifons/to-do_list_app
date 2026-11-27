@@ -1,9 +1,16 @@
+import { Button } from "@/components/ui/button";
 import { taskTypeLabels, type Task } from "@/features/task/types";
 import TaskMetadata from "./TaskMetaData";
 import TaskStatus from "./TaskStatus";
 import TaskTypeIcon from "./TaskTypeIcon";
 
-function TaskListItem({ task }: { task: Task }) {
+function TaskListItem({
+  task,
+  onViewDetails,
+}: {
+  task: Task;
+  onViewDetails: (taskId: number) => void;
+}) {
   return (
     <article className="group flex flex-col gap-3 border-b border-border/70 px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5">
       <div className="flex min-w-0 flex-1 items-start gap-3.5">
@@ -27,7 +34,19 @@ function TaskListItem({ task }: { task: Task }) {
           <TaskMetadata task={task} />
         </div>
       </div>
-      <TaskStatus completed={task.completed} />
+      <div className="flex shrink-0 items-center gap-3 self-end sm:self-auto">
+        <TaskStatus completed={task.completed} />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          aria-label={`View details for ${task.title}`}
+          onClick={() => onViewDetails(task.id)}
+          className="rounded-xl"
+        >
+          Details
+        </Button>
+      </div>
     </article>
   );
 }
