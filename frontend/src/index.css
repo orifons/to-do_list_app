@@ -120,7 +120,9 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    scrollbar-color: var(--muted-foreground) var(--muted);
+    --scrollbar-thumb: var(--primary);
+    --scrollbar-track: var(--muted);
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
     scrollbar-width: thin;
   }
 
@@ -144,12 +146,12 @@
   }
 
   *::-webkit-scrollbar-thumb {
-    background-color: var(--muted-foreground);
+    background-color: var(--scrollbar-thumb);
     border-radius: 999px;
   }
 
   *::-webkit-scrollbar-track {
-    background-color: var(--muted);
+    background-color: var(--scrollbar-track);
     border-radius: 999px;
   }
 }
