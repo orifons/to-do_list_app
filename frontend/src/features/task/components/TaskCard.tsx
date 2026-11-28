@@ -22,7 +22,9 @@ function TaskCard({
   return (
     <Card
       className={`group h-full rounded-2xl border-0 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
-        selected ? "ring-2 ring-primary/45" : "ring-1 ring-border/80"
+        selected
+          ? "bg-primary/10 ring-2 ring-primary/80 shadow-md shadow-primary/15"
+          : "ring-1 ring-border/80"
       }`}
     >
       <CardContent className="flex h-full flex-col p-5">

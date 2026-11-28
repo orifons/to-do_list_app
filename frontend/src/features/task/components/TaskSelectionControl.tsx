@@ -28,8 +28,10 @@ function TaskSelectionControl({
       </span>
       <label
         className={`absolute inset-0 z-10 flex size-11 cursor-pointer items-center justify-center rounded-xl transition-opacity focus-within:ring-2 focus-within:ring-ring/50 ${
-          selectionMode || selected
-            ? "bg-primary/5 opacity-100"
+          selected
+            ? "bg-primary/20 opacity-100 ring-1 ring-primary/70"
+            : selectionMode
+              ? "bg-muted opacity-100"
             : "bg-background opacity-100 md:pointer-events-none md:bg-transparent md:opacity-0 md:group-hover:pointer-events-auto md:group-hover:bg-primary/5 md:group-hover:opacity-100 md:group-focus-within:pointer-events-auto md:group-focus-within:bg-primary/5 md:group-focus-within:opacity-100"
         }`}
       >

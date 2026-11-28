@@ -18,8 +18,10 @@ function TaskListItem({
   onToggleSelection: (taskId: number) => void;
 }) {
   return (
-    <article className={`group flex flex-col gap-3 border-b px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5 ${
-      selected ? "border-primary/30 bg-muted/40" : "border-border/70"
+    <article className={`group flex flex-col gap-3 border-b border-l-4 px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5 ${
+      selected
+        ? "border-primary/30 border-l-primary bg-primary/10"
+        : "border-border/70 border-l-transparent"
     }`}>
       <div className="flex min-w-0 flex-1 items-start gap-3.5">
         <TaskSelectionControl
