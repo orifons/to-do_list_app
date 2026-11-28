@@ -1,20 +1,25 @@
 import axiosInstance from "@/configs/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { API_URLS } from "@/configs/api-urls";
 import {
   CalendarDays,
   Check,
+  Circle,
   Clock3,
   LayoutGrid,
   List,
   Plus,
   Search,
+  Trash2,
 } from "lucide-react";
 
 import {
+  BulkDeleteTasksDialog,
   TaskFormDialog,
   TaskDetailDialog,
   TaskCard,
@@ -43,6 +48,11 @@ function TaskListPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState<number | null>(null);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
+  const [selectedTaskIds, setSelectedTaskIds] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     localStorage.setItem("tasks-mode-view", viewMode)
@@ -58,6 +68,75 @@ function TaskListPage() {
   const taskError = tasksQuery.isError ? getApiError(tasksQuery.error) : null;
 
   const tasks = tasksQuery.data ?? EMPTY_TASKS;
+  const taskIds = useMemo(
+    () => new Set(tasks.map((task) => task.id)),
+    [tasks],
+  );
+  const activeSelectedTaskIds = useMemo(
+    () => new Set([...selectedTaskIds].filter((taskId) => taskIds.has(taskId))),
+    [selectedTaskIds, taskIds],
+  );
+  const selectedTasks = tasks.filter((task) =>
+    activeSelectedTaskIds.has(task.id),
+  );
+  const selectionMode = selectedTasks.length > 0;
+
+  const updateSelectedTasksMutation = useMutation({
+    mutationFn: async ({
+      taskIds,
+      completed,
+    }: {
+      taskIds: number[];
+      completed: boolean;
+    }) =>
+      Promise.allSettled(
+        taskIds.map((taskId) =>
+          axiosInstance.patch<Task>(API_URLS.tasks.updateTask(taskId), {
+            completed,
+          }),
+        ),
+      ),
+    onSuccess: async (results, variables) => {
+      const updatedTasks = results.flatMap((result) =>
+        result.status === "fulfilled" ? [result.value.data] : [],
+      );
+      const failedResults = results.filter(
+        (result) => result.status === "rejected",
+      );
+      const updatedById = new Map(
+        updatedTasks.map((task) => [task.id, task]),
+      );
+
+      queryClient.setQueryData<Task[]>(["tasks"], (currentTasks) =>
+        currentTasks?.map((task) => updatedById.get(task.id) ?? task),
+      );
+      updatedTasks.forEach((task) => {
+        queryClient.setQueryData(["tasks", task.id], task);
+      });
+
+      if (updatedTasks.length > 0) {
+        toast.success(
+          `${updatedTasks.length} ${
+            updatedTasks.length === 1 ? "task" : "tasks"
+          } marked as ${variables.completed ? "completed" : "pending"}.`,
+        );
+      }
+      if (failedResults.length > 0) {
+        const { message } = getApiError(failedResults[0].reason);
+        toast.error(
+          `${failedResults.length} ${
+            failedResults.length === 1 ? "task could" : "tasks could"
+          } not be updated. ${message}`,
+        );
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ["tasks"] });
+    },
+    onError: (error) => {
+      const { message } = getApiError(error);
+      toast.error(message || "Unable to update the selected tasks.");
+    },
+  });
   const filteredTasks = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase("en");
     return tasks.filter((task) => {
@@ -143,25 +222,27 @@ function TaskListPage() {
         </div>
 
         <div className="mb-4 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="flex gap-1 overflow-x-auto" aria-label="Filter tasks">
-            {filters.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                aria-pressed={filter === item.id}
-                onClick={() => setFilter(item.id)}
-                className={
-                  filter === item.id
-                    ? "inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground"
-                    : "inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                }
-              >
-                {item.label}
-                <span className={filter === item.id ? "rounded-full bg-primary-foreground/15 px-1.5 py-0.5 text-[10px]" : "rounded-full bg-muted px-1.5 py-0.5 text-[10px]"}>
-                  {item.count}
-                </span>
-              </button>
-            ))}
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <div className="flex gap-1 overflow-x-auto" aria-label="Filter tasks">
+              {filters.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-pressed={filter === item.id}
+                  onClick={() => setFilter(item.id)}
+                  className={
+                    filter === item.id
+                      ? "inline-flex shrink-0 items-center gap-2 rounded-xl bg-primary px-3.5 py-2 text-xs font-semibold text-primary-foreground"
+                      : "inline-flex shrink-0 items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                  }
+                >
+                  {item.label}
+                  <span className={filter === item.id ? "rounded-full bg-primary-foreground/15 px-1.5 py-0.5 text-[10px]" : "rounded-full bg-muted px-1.5 py-0.5 text-[10px]"}>
+                    {item.count}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -201,6 +282,86 @@ function TaskListPage() {
             </div>
           </div>
         </div>
+
+        {selectionMode && (
+          <div
+            className="mb-5 flex flex-col gap-3 rounded-2xl border border-primary/15 bg-background px-4 py-3 shadow-sm sm:flex-row sm:items-center sm:justify-between"
+            role="toolbar"
+            aria-label="Selected task actions"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-sm font-medium" aria-live="polite">
+                {selectedTasks.length}{" "}
+                {selectedTasks.length === 1 ? "task selected" : "tasks selected"}
+              </p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setSelectedTaskIds(new Set())}
+                className="rounded-lg text-muted-foreground"
+              >
+                Clear selection
+              </Button>
+            </div>
+            <div className="flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                aria-label="Mark selected tasks as completed"
+                disabled={
+                  selectedTasks.every((task) => task.completed) ||
+                  updateSelectedTasksMutation.isPending
+                }
+                onClick={() =>
+                  updateSelectedTasksMutation.mutate({
+                    taskIds: selectedTasks.map((task) => task.id),
+                    completed: true,
+                  })
+                }
+                className="rounded-xl"
+              >
+                <Check aria-hidden="true" />
+                Complete
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                aria-label="Mark selected tasks as pending"
+                disabled={
+                  selectedTasks.every((task) => !task.completed) ||
+                  updateSelectedTasksMutation.isPending
+                }
+                onClick={() =>
+                  updateSelectedTasksMutation.mutate({
+                    taskIds: selectedTasks.map((task) => task.id),
+                    completed: false,
+                  })
+                }
+                className="rounded-xl"
+              >
+                <Circle aria-hidden="true" />
+                Set pending
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="icon"
+                aria-label={`Delete ${selectedTasks.length} selected ${
+                  selectedTasks.length === 1 ? "task" : "tasks"
+                }`}
+                title="Delete selected tasks"
+                disabled={updateSelectedTasksMutation.isPending}
+                onClick={() => setIsBulkDeleteOpen(true)}
+                className="rounded-xl"
+              >
+                <Trash2 aria-hidden="true" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {tasksQuery.isPending ? (
           <div className="rounded-2xl border border-dashed border-border bg-background px-6 py-16 text-center">
@@ -253,6 +414,16 @@ function TaskListPage() {
                 key={task.id}
                 task={task}
                 onViewDetails={setSelectedTaskId}
+                selected={activeSelectedTaskIds.has(task.id)}
+                selectionMode={selectionMode}
+                onToggleSelection={(taskId) => {
+                  setSelectedTaskIds((current) => {
+                    const next = new Set(current);
+                    if (next.has(taskId)) next.delete(taskId);
+                    else next.add(taskId);
+                    return next;
+                  });
+                }}
               />
             ))}
           </div>
@@ -263,6 +434,16 @@ function TaskListPage() {
                 key={task.id}
                 task={task}
                 onViewDetails={setSelectedTaskId}
+                selected={activeSelectedTaskIds.has(task.id)}
+                selectionMode={selectionMode}
+                onToggleSelection={(taskId) => {
+                  setSelectedTaskIds((current) => {
+                    const next = new Set(current);
+                    if (next.has(taskId)) next.delete(taskId);
+                    else next.add(taskId);
+                    return next;
+                  });
+                }}
               />
             ))}
           </div>
@@ -278,6 +459,26 @@ function TaskListPage() {
         open={isCreateDialogOpen}
         onOpenChange={setIsCreateDialogOpen}
         task={null}
+      />
+      <BulkDeleteTasksDialog
+        tasks={selectedTasks}
+        open={isBulkDeleteOpen}
+        onOpenChange={setIsBulkDeleteOpen}
+        onDeleted={(taskIds) => {
+          setSelectedTaskIds((current) => {
+            const next = new Set(current);
+            taskIds.forEach((taskId) => next.delete(taskId));
+            return next;
+          });
+        }}
+        onRemoveTask={(taskId) => {
+          if (activeSelectedTaskIds.size === 1) setIsBulkDeleteOpen(false);
+          setSelectedTaskIds((current) => {
+            const next = new Set(current);
+            next.delete(taskId);
+            return next;
+          });
+        }}
       />
       <TaskDetailDialog
         taskId={selectedTaskId}

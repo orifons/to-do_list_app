@@ -3,23 +3,36 @@ import { Button } from "@/components/ui/button";
 import { taskTypeLabels, type Task } from "@/features/task/types";
 
 import TaskMetadata from "@/features/task/components/TaskMetaData";
+import TaskSelectionControl from "@/features/task/components/TaskSelectionControl";
 import TaskStatus from "@/features/task/components/TaskStatus";
-import TaskTypeIcon from "@/features/task/components/TaskTypeIcon";
 
 function TaskCard({
   task,
   onViewDetails,
+  selected,
+  selectionMode,
+  onToggleSelection,
 }: {
   task: Task;
   onViewDetails: (taskId: number) => void;
+  selected: boolean;
+  selectionMode: boolean;
+  onToggleSelection: (taskId: number) => void;
 }) {
   return (
-    <Card className="h-full rounded-2xl border-0 shadow-sm ring-1 ring-border/80 transition-all hover:-translate-y-0.5 hover:shadow-md">
+    <Card
+      className={`group h-full rounded-2xl border-0 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${
+        selected ? "ring-2 ring-primary/45" : "ring-1 ring-border/80"
+      }`}
+    >
       <CardContent className="flex h-full flex-col p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary/5 text-primary">
-            <TaskTypeIcon type={task.task_type} />
-          </span>
+          <TaskSelectionControl
+            task={task}
+            selected={selected}
+            selectionMode={selectionMode}
+            onToggleSelection={onToggleSelection}
+          />
           <TaskStatus completed={task.completed} />
         </div>
         <div className="mb-5">

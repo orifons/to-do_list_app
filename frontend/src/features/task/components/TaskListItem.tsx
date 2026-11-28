@@ -1,22 +1,33 @@
 import { Button } from "@/components/ui/button";
 import { taskTypeLabels, type Task } from "@/features/task/types";
+import TaskSelectionControl from "@/features/task/components/TaskSelectionControl";
 import TaskMetadata from "./TaskMetaData";
 import TaskStatus from "./TaskStatus";
-import TaskTypeIcon from "./TaskTypeIcon";
 
 function TaskListItem({
   task,
   onViewDetails,
+  selected,
+  selectionMode,
+  onToggleSelection,
 }: {
   task: Task;
   onViewDetails: (taskId: number) => void;
+  selected: boolean;
+  selectionMode: boolean;
+  onToggleSelection: (taskId: number) => void;
 }) {
   return (
-    <article className="group flex flex-col gap-3 border-b border-border/70 px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5">
+    <article className={`group flex flex-col gap-3 border-b px-4 py-5 transition-colors last:border-b-0 hover:bg-muted/30 sm:flex-row sm:items-center sm:gap-5 sm:px-5 ${
+      selected ? "border-primary/30 bg-muted/40" : "border-border/70"
+    }`}>
       <div className="flex min-w-0 flex-1 items-start gap-3.5">
-        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/5 text-primary">
-          <TaskTypeIcon type={task.task_type} />
-        </span>
+        <TaskSelectionControl
+          task={task}
+          selected={selected}
+          selectionMode={selectionMode}
+          onToggleSelection={onToggleSelection}
+        />
         <div className="min-w-0 flex-1">
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
             <h2 className={task.completed ? "font-medium text-muted-foreground line-through" : "font-semibold"}>
