@@ -120,6 +120,8 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-color: var(--muted-foreground) var(--muted);
+    scrollbar-width: thin;
   }
 
   body {
@@ -128,5 +130,26 @@
 
   html {
     @apply font-sans;
+  }
+}
+
+@supports not (scrollbar-color: auto) {
+  * {
+    scrollbar-width: auto;
+  }
+
+  *::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--muted-foreground);
+    border-radius: 999px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background-color: var(--muted);
+    border-radius: 999px;
   }
 }
